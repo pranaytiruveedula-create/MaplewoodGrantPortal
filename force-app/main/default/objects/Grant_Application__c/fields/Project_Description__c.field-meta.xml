@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Project_Description__c</fullName>
+    <description>Goals, activities, expected outcomes</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Describe your project goals, activities, and expected outcomes (50-2000 characters)</inlineHelpText>
+    <label>Project Description</label>
+    <length>5000</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>6</visibleLines>
+</CustomField>

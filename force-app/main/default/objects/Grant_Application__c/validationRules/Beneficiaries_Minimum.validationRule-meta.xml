@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Beneficiaries_Minimum</fullName>
+    <active>true</active>
+    <description>Estimated Beneficiaries must be at least 1</description>
+    <errorConditionFormula>Num_Beneficiaries__c &lt; 1</errorConditionFormula>
+    <errorDisplayField>Num_Beneficiaries__c</errorDisplayField>
+    <errorMessage>Estimated Beneficiaries must be at least 1</errorMessage>
+</ValidationRule>

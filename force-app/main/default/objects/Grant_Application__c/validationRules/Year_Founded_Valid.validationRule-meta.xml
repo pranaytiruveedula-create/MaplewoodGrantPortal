@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Year_Founded_Valid</fullName>
+    <active>true</active>
+    <description>Year Founded must be between 1800 and current year</description>
+    <errorConditionFormula>OR(
+    Year_Founded__c &lt; 1800,
+    Year_Founded__c &gt; YEAR(TODAY())
+)</errorConditionFormula>
+    <errorDisplayField>Year_Founded__c</errorDisplayField>
+    <errorMessage>Year Founded must be between 1800 and the current year</errorMessage>
+</ValidationRule>
