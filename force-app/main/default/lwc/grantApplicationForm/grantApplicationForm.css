@@ -1,0 +1,15 @@
+:host {
+    display: block;
+}
+
+.slds-theme_success {
+    background-color: #d4edda;
+    border: 1px solid #28a745;
+    border-radius: 0.25rem;
+}
+
+.slds-theme_error {
+    background-color: #f8d7da;
+    border: 1px solid #dc3545;
+    border-radius: 0.25rem;
+}
