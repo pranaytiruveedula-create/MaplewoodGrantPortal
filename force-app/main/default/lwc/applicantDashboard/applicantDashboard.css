@@ -1,0 +1,39 @@
+.app-card {
+    height: 100%;
+    transition: box-shadow 0.2s ease;
+}
+
+.app-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badge-review {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+.award-label {
+    color: #2e844a;
+    font-weight: bold;
+}
+
+.award-amount {
+    color: #2e844a;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.award-box {
+    background-color: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
+
+.slds-alert_success {
+    background-color: #c8e6c9;
+    border: 1px solid #4caf50;
+}
+
+.slds-alert_error {
+    background-color: #ffcdd2;
+    border: 1px solid #f44336;
+}

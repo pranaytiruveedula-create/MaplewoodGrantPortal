@@ -1,0 +1,24 @@
+.stat-box {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-approved {
+    background-color: #c8e6c9;
+    border-left: 4px solid #4caf50;
+}
+
+.stat-rejected {
+    background-color: #ffcdd2;
+    border-left: 4px solid #f44336;
+}
+
+.award-preview {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.award-amount {
+    color: #1565c0;
+    font-weight: bold;
+}

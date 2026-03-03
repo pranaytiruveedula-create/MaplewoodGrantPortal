@@ -116,7 +116,7 @@ export default class GrantApplicationForm extends LightningElement {
 
     handleInputChange(event) {
         const field = event.target.dataset.field;
-        let value = event.target.value;
+        let value = event.detail?.value ?? event.target.value;
         
         if (event.target.type === 'number') {
             value = value ? Number(value) : null;
@@ -261,9 +261,15 @@ export default class GrantApplicationForm extends LightningElement {
                 files: null
             };
 
-            const result = await saveApplication({
+            const savePromise = saveApplication({
                 applicationJSON: JSON.stringify(applicationData)
             });
+
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timed out. Check your connection or contact support.')), 30000);
+            });
+
+            const result = await Promise.race([savePromise, timeoutPromise]);
 
             if (result.success) {
                 this.savedApplicationNumber = result.applicationNumber;
@@ -273,8 +279,8 @@ export default class GrantApplicationForm extends LightningElement {
                 this.showToast('Error', result.errorMessage || 'Failed to submit application', 'error');
             }
         } catch (error) {
-            console.error('Submit error:', error);
-            this.showToast('Error', error.body?.message || 'An unexpected error occurred', 'error');
+            const msg = error.body?.message || error.message || (typeof error === 'string' ? error : 'Unable to submit. Ensure you are logged in and have access.');
+            this.showToast('Error', msg, 'error');
         } finally {
             this.isLoading = false;
         }

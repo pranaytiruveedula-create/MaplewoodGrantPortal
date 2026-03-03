@@ -16,8 +16,8 @@ public with sharing class GrantApplicationController {
         @AuraEnabled public String projectCategory;
         @AuraEnabled public String projectDescription;
         @AuraEnabled public String targetPopulation;
-        @AuraEnabled public Date projectStartDate;
-        @AuraEnabled public Date projectEndDate;
+        @AuraEnabled public String projectStartDate;
+        @AuraEnabled public String projectEndDate;
         @AuraEnabled public Decimal amountRequested;
         @AuraEnabled public Decimal totalProjectCost;
         @AuraEnabled public Integer numBeneficiaries;
@@ -66,8 +66,8 @@ public with sharing class GrantApplicationController {
             application.Project_Category__c = wrapper.projectCategory;
             application.Project_Description__c = wrapper.projectDescription;
             application.Target_Population__c = wrapper.targetPopulation;
-            application.Project_Start_Date__c = wrapper.projectStartDate;
-            application.Project_End_Date__c = wrapper.projectEndDate;
+            application.Project_Start_Date__c = parseDate(wrapper.projectStartDate);
+            application.Project_End_Date__c = parseDate(wrapper.projectEndDate);
             application.Amount_Requested__c = wrapper.amountRequested;
             application.Total_Project_Cost__c = wrapper.totalProjectCost;
             application.Num_Beneficiaries__c = wrapper.numBeneficiaries;
@@ -140,6 +140,15 @@ public with sharing class GrantApplicationController {
         insert links;
     }
     
+    private static Date parseDate(String dateStr) {
+        if (String.isBlank(dateStr)) return null;
+        try {
+            return Date.valueOf(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     private static void createStatusHistory(Id applicationId, String oldStatus, String newStatus, String comments) {
         Status_History__c history = new Status_History__c();
         history.Application__c = applicationId;
@@ -153,8 +162,12 @@ public with sharing class GrantApplicationController {
     @AuraEnabled(cacheable=true)
     public static List<Grant_Application__c> getMyApplications() {
         return [
-            SELECT Id, Name, Organization_Name__c, Project_Title__c, 
-                   Status__c, Amount_Requested__c, 
+            SELECT Id, Name, Organization_Name__c, Organization_Type__c, 
+                   Year_Founded__c, Annual_Budget__c, Project_Title__c, 
+                   Project_Category__c, Project_Description__c,
+                   Status__c, Amount_Requested__c, Total_Project_Cost__c,
+                   Num_Beneficiaries__c, Award_Amount__c, Award_Breakdown__c,
+                   Eligibility_Results__c, Reviewer_Comments__c,
                    Submission_Date__c, CreatedDate
             FROM Grant_Application__c
             WHERE CreatedById = :UserInfo.getUserId()

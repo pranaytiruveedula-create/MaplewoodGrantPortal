@@ -1,0 +1,245 @@
+<template>
+    <lightning-card title="Grant Applications Review" icon-name="standard:task">
+        <div slot="actions">
+            <lightning-button label="Refresh" icon-name="utility:refresh" onclick={handleRefresh}></lightning-button>
+        </div>
+
+        <div class="slds-p-horizontal_medium">
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-theme_shade stat-box">
+                        <p class="slds-text-title">Submitted</p>
+                        <p class="slds-text-heading_large">{stats.submitted}</p>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-theme_shade stat-box">
+                        <p class="slds-text-title">Under Review</p>
+                        <p class="slds-text-heading_large">{stats.underReview}</p>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box stat-box stat-approved">
+                        <p class="slds-text-title">Approved</p>
+                        <p class="slds-text-heading_large">{stats.approved}</p>
+                        <p class="slds-text-body_small">${stats.totalAwarded}</p>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box stat-box stat-rejected">
+                        <p class="slds-text-title">Rejected</p>
+                        <p class="slds-text-heading_large">{stats.rejected}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning-combobox
+                        name="status"
+                        label="Filter by Status"
+                        value={filterStatus}
+                        options={statusOptions}
+                        onchange={handleFilterChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning-combobox
+                        name="eligibility"
+                        label="Filter by Eligibility"
+                        value={filterEligibility}
+                        options={eligibilityOptions}
+                        onchange={handleFilterChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <template if:true={hasApplications}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={applications}
+                    columns={columns}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+            <template if:false={hasApplications}>
+                <div class="slds-illustration slds-illustration_small slds-p-vertical_large slds-text-align_center">
+                    <p class="slds-text-body_regular">No applications found</p>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+
+    <template if:true={showReviewModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeReviewModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title">Review Application: {selectedApplication.Name}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Organization Details</h3>
+                            <dl class="slds-dl_horizontal">
+                                <dt class="slds-dl_horizontal__label">Organization:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Organization_Name__c}</dd>
+                                <dt class="slds-dl_horizontal__label">Type:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Organization_Type__c}</dd>
+                                <dt class="slds-dl_horizontal__label">Year Founded:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Year_Founded__c}</dd>
+                                <dt class="slds-dl_horizontal__label">Annual Budget:</dt>
+                                <dd class="slds-dl_horizontal__detail">
+                                    <lightning-formatted-number value={selectedApplication.Annual_Budget__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                </dd>
+                            </dl>
+                            
+                            <h3 class="slds-text-heading_small slds-m-top_medium slds-m-bottom_small">Project Details</h3>
+                            <dl class="slds-dl_horizontal">
+                                <dt class="slds-dl_horizontal__label">Project Title:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Project_Title__c}</dd>
+                                <dt class="slds-dl_horizontal__label">Category:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Project_Category__c}</dd>
+                                <dt class="slds-dl_horizontal__label">Amount Requested:</dt>
+                                <dd class="slds-dl_horizontal__detail">
+                                    <lightning-formatted-number value={selectedApplication.Amount_Requested__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                </dd>
+                                <dt class="slds-dl_horizontal__label">Total Project Cost:</dt>
+                                <dd class="slds-dl_horizontal__detail">
+                                    <lightning-formatted-number value={selectedApplication.Total_Project_Cost__c} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                </dd>
+                                <dt class="slds-dl_horizontal__label">Beneficiaries:</dt>
+                                <dd class="slds-dl_horizontal__detail">{selectedApplication.Num_Beneficiaries__c}</dd>
+                            </dl>
+                            <p class="slds-m-top_small"><strong>Description:</strong></p>
+                            <p class="slds-text-body_regular">{selectedApplication.Project_Description__c}</p>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-2">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Eligibility Check</h3>
+                            <div class="slds-box slds-m-bottom_medium">
+                                <template for:each={eligibilityResultsParsed} for:item="rule">
+                                    <div key={rule.ruleId} class="slds-p-vertical_xx-small">
+                                        <lightning-icon 
+                                            icon-name={rule.passed}
+                                            size="x-small"
+                                            class="slds-m-right_x-small">
+                                        </lightning-icon>
+                                        <span><strong>{rule.ruleName}:</strong> {rule.message}</span>
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <template if:true={awardPreview}>
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">Award Calculation Preview</h3>
+                                <div class="slds-box award-preview">
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Factor</th>
+                                                <th>Score</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={awardFactors} for:item="factor">
+                                                <tr key={factor.factorName}>
+                                                    <td>{factor.factorName}</td>
+                                                    <td>{factor.score} / {factor.maxScore}</td>
+                                                    <td>{factor.detail}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="slds-text-title_caps">
+                                                <td><strong>Total Score</strong></td>
+                                                <td><strong>{awardPreview.totalScore} / {awardPreview.maxScore}</strong></td>
+                                                <td><strong>{awardPreview.awardPercentage}%</strong></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <div class="slds-m-top_small slds-text-align_center">
+                                        <p class="slds-text-heading_medium award-amount">
+                                            Calculated Award: 
+                                            <lightning-formatted-number value={awardPreview.finalAwardAmount} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Close" onclick={closeReviewModal}></lightning-button>
+                    <template if:true={canReject}>
+                        <lightning-button variant="destructive" label="Reject" onclick={handleRejectClick} class="slds-m-left_x-small"></lightning-button>
+                    </template>
+                    <template if:true={canApprove}>
+                        <lightning-button variant="brand" label="Approve" onclick={handleApproveClick} class="slds-m-left_x-small"></lightning-button>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showApproveModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-modal__title">Confirm Approval</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-m-bottom_medium">
+                        Approve this application with an award of 
+                        <strong>
+                            <lightning-formatted-number value={awardPreview.finalAwardAmount} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                        </strong>?
+                    </p>
+                    <lightning-textarea
+                        label="Comments (Optional)"
+                        value={approveComments}
+                        onchange={handleApproveCommentsChange}
+                        placeholder="Add any comments for the applicant...">
+                    </lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeApproveModal}></lightning-button>
+                    <lightning-button variant="brand" label="Confirm Approval" onclick={confirmApprove} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showRejectModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-modal__title">Confirm Rejection</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-textarea
+                        label="Rejection Comments"
+                        value={rejectComments}
+                        onchange={handleRejectCommentsChange}
+                        placeholder="Please provide a reason for rejection..."
+                        required>
+                    </lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeRejectModal}></lightning-button>
+                    <lightning-button variant="destructive" label="Confirm Rejection" onclick={confirmReject} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
