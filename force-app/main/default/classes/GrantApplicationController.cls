@@ -178,18 +178,23 @@ public with sharing class GrantApplicationController {
     
     @AuraEnabled(cacheable=true)
     public static Grant_Application__c getApplicationDetails(String applicationId) {
-        return [
-            SELECT Id, Name, Organization_Name__c, Organization_Type__c, EIN__c,
-                   Year_Founded__c, Annual_Budget__c, Mission_Statement__c,
-                   Organization_Address__c, Contact_Name__c, Contact_Title__c,
-                   Contact_Email__c, Contact_Phone__c, Project_Title__c,
-                   Project_Category__c, Project_Description__c, Target_Population__c,
-                   Project_Start_Date__c, Project_End_Date__c, Amount_Requested__c,
-                   Total_Project_Cost__c, Num_Beneficiaries__c, Status__c,
-                   Submission_Date__c, Eligibility_Results__c, Award_Amount__c,
-                   Reviewer_Comments__c, Review_Score__c
-            FROM Grant_Application__c
-            WHERE Id = :applicationId
-        ];
+        try {
+            return [
+                SELECT Id, Name, Organization_Name__c, Organization_Type__c, EIN__c,
+                       Year_Founded__c, Annual_Budget__c, Mission_Statement__c,
+                       Organization_Address__c, Contact_Name__c, Contact_Title__c,
+                       Contact_Email__c, Contact_Phone__c, Project_Title__c,
+                       Project_Category__c, Project_Description__c, Target_Population__c,
+                       Project_Start_Date__c, Project_End_Date__c, Amount_Requested__c,
+                       Total_Project_Cost__c, Num_Beneficiaries__c, Status__c,
+                       Submission_Date__c, Eligibility_Results__c, Award_Amount__c,
+                       Reviewer_Comments__c, Review_Score__c
+                FROM Grant_Application__c
+                WHERE Id = :applicationId
+                LIMIT 1
+            ];
+        } catch (Exception e) {
+            throw new AuraHandledException('Application not found or you do not have access.');
+        }
     }
 }

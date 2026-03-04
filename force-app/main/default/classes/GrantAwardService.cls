@@ -63,8 +63,13 @@ public with sharing class GrantAwardService {
             result.addFactor(scoreCostEfficiency(app.Amount_Requested__c, app.Total_Project_Cost__c));
             
             result.awardPercentage = (Decimal.valueOf(result.totalScore) / Decimal.valueOf(result.maxScore) * 100).setScale(2);
-            result.rawAwardAmount = app.Amount_Requested__c * (result.awardPercentage / 100);
-            result.finalAwardAmount = Math.min(roundToNearest100(result.rawAwardAmount), 50000);
+            if (app.Amount_Requested__c != null) {
+                result.rawAwardAmount = app.Amount_Requested__c * (result.awardPercentage / 100);
+                result.finalAwardAmount = Math.min(roundToNearest100(result.rawAwardAmount), 50000);
+            } else {
+                result.rawAwardAmount = 0;
+                result.finalAwardAmount = 0;
+            }
             
         } catch (Exception e) {
             result.success = false;
@@ -176,6 +181,11 @@ public with sharing class GrantAwardService {
     private static FactorScore scoreOrganizationTrackRecord(Decimal yearFounded) {
         Integer score;
         String detail;
+
+        if (yearFounded == null) {
+            return new FactorScore('Organization Track Record', 'Years operating', 0, 'Year founded not provided');
+        }
+
         Integer currentYear = Date.today().year();
         Integer yearsOperating = currentYear - Integer.valueOf(yearFounded);
         
@@ -199,7 +209,11 @@ public with sharing class GrantAwardService {
     private static FactorScore scoreProjectCategory(String category) {
         Integer score;
         String detail;
-        
+
+        if (String.isBlank(category)) {
+            return new FactorScore('Project Category Priority', 'Category alignment', 0, 'Category not provided');
+        }
+
         Set<String> tier1 = new Set<String>{'Arts & Culture', 'Workforce Development', 'Other'};
         Set<String> tier2 = new Set<String>{'Youth Programs', 'Senior Services'};
         Set<String> tier3 = new Set<String>{'Public Health', 'Neighborhood Safety'};
