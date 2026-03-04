@@ -20,10 +20,8 @@
           },
           "children" : [ {
             "children" : [ {
-              "attributes" : {
-                "richText" : "<h1 style=\"color:#003068;\">Maplewood County Community Development Grant Program</h1><p>Supporting local nonprofits and community organizations with funding for impactful projects in public health, neighborhood safety, youth programs, workforce development, and more.</p><h2 style=\"color:#003068;\">Who Can Apply?</h2><ul><li>501(c)(3) and 501(c)(4) nonprofits</li><li>Community-based and faith-based organizations</li><li>Organizations operating for at least 2 years</li><li>Annual budget under $500,000</li></ul><h2 style=\"color:#003068;\">Grant Details</h2><ul><li>Awards up to $50,000</li><li>Projects must serve Maplewood County residents</li><li>Minimum 50 beneficiaries required</li></ul><p><a href=\"/grants/login\"><strong>Log in to apply or view your applications &rarr;</strong></a></p>"
-              },
-              "definition" : "community_builder:richTextBlock",
+              "attributes" : { },
+              "definition" : "c:grantHomeContent",
               "id" : "1ca236ef-bb93-4e46-b621-cde63a20c971",
               "type" : "component"
             } ],
