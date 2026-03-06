@@ -1,361 +1,735 @@
 <template>
-    <lightning-card title="Grant Application" icon-name="standard:opportunity">
-        
-        <template if:true={showConfirmation}>
-            <div class="slds-p-around_large slds-text-align_center">
-                <lightning-icon icon-name="utility:success" size="large" alternative-text="Success" class="slds-m-bottom_medium"></lightning-icon>
-                <h2 class="slds-text-heading_large slds-m-bottom_medium">Application Submitted!</h2>
-                <p class="slds-text-body_regular slds-m-bottom_medium">
-                    Your application number is: <strong>{savedApplicationNumber}</strong>
-                </p>
-                <p class="slds-text-body_small slds-m-bottom_large">
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <div class="logo-icon">
+                    <lightning-icon icon-name="custom:custom62" size="medium"></lightning-icon>
+                </div>
+                <div class="brand-text">
+                    <h1 class="site-title">Maplewood County</h1>
+                    <p class="site-subtitle">Community Development Grant Program</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <button class="logout-button" onclick={handleLogout}>
+                    <lightning-icon icon-name="utility:logout" size="x-small"></lightning-icon>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <template if:true={showConfirmation}>
+        <div class="confirmation-container">
+            <div class="confirmation-card">
+                <div class="success-icon">
+                    <lightning-icon icon-name="utility:success" size="large" alternative-text="Success"></lightning-icon>
+                </div>
+                <h1 class="confirmation-title">Application Submitted!</h1>
+                <p class="confirmation-number">Your application number is: <strong>{savedApplicationNumber}</strong></p>
+                <p class="confirmation-message">
                     You will receive an email confirmation shortly. You can track your application status in your dashboard.
                 </p>
                 <lightning-button 
+                    label="Back to Dashboard" 
+                    variant="neutral" 
+                    onclick={handleBackToDashboard}
+                    class="confirmation-button">
+                </lightning-button>
+                <lightning-button 
                     label="Start New Application" 
                     variant="brand" 
-                    onclick={handleStartNewApplication}>
+                    onclick={handleStartNewApplication}
+                    class="confirmation-button">
                 </lightning-button>
             </div>
-        </template>
+        </div>
+    </template>
 
-        <template if:false={showConfirmation}>
-            <div class="slds-p-around_medium">
-                <lightning-progress-indicator current-step={currentSection} type="base" variant="base">
-                    <lightning-progress-step label="Organization & Eligibility" value="1"></lightning-progress-step>
-                    <lightning-progress-step label="Project Details" value="2"></lightning-progress-step>
-                </lightning-progress-indicator>
-            </div>
+    <template if:false={showConfirmation}>
+        <div class="form-wrapper">
+            <!-- Left Side: Form -->
+            <div class="form-section">
+                <div class="form-header">
+                    <h1 class="form-title">Grant Application</h1>
+                    <p class="form-subtitle">Maplewood County Community Development Program</p>
+                </div>
 
-            <template if:true={showEligibilityPanel}>
-                <div class={eligibilityStatusClass}>
-                    <h3 class="slds-text-heading_small slds-m-bottom_small">{eligibilityStatusText}</h3>
-                    <div class="slds-grid slds-wrap slds-gutters_small">
-                        <template for:each={formattedRules} for:item="rule">
-                            <div key={rule.ruleId} class="slds-col slds-size_1-of-2 slds-p-vertical_xx-small">
-                                <lightning-icon 
-                                    icon-name={rule.iconName}
-                                    size="x-small"
-                                    alternative-text={rule.altText}
-                                    class="slds-m-right_x-small">
-                                </lightning-icon>
-                                <span class="slds-text-body_small">
-                                    <strong>{rule.ruleName}:</strong> {rule.message}
-                                </span>
-                            </div>
-                        </template>
+                <!-- Progress Steps -->
+                <div class="progress-container">
+                    <div class={step1Class} data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Organization Info</div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class={step2Class} data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Project Details</div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class={step3Class} data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Review & Submit</div>
                     </div>
                 </div>
-            </template>
 
-            <template if:true={isSection1}>
-                <div class="slds-p-around_medium">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Organization Information</h2>
-                    
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                label="Organization Name" 
-                                value={formData.organizationName}
-                                data-field="organizationName"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
+                <!-- Section 1: Organization Information -->
+                <template if:true={isSection1}>
+                    <div class="form-content">
+                        <div class="section-header">
+                            <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                            <h2>Organization Information</h2>
                         </div>
                         
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-combobox
-                                label="Organization Type"
-                                value={formData.organizationType}
-                                data-field="organizationType"
-                                options={organizationTypeOptions}
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-combobox>
+                        <div class="form-grid">
+                            <div class="form-field full-width">
+                                <lightning-input 
+                                    label="Organization Name" 
+                                    value={formData.organizationName}
+                                    data-field="organizationName"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="form-field">
+                                <lightning-combobox
+                                    label="Organization Type"
+                                    value={formData.organizationType}
+                                    data-field="organizationType"
+                                    options={organizationTypeOptions}
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-combobox>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    label="EIN (Tax ID)" 
+                                    value={formData.ein}
+                                    data-field="ein"
+                                    placeholder="XX-XXXXXXX"
+                                    pattern="\d{2}-\d{7}"
+                                    message-when-pattern-mismatch="Format: XX-XXXXXXX"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="number"
+                                    label="Year Founded" 
+                                    value={formData.yearFounded}
+                                    data-field="yearFounded"
+                                    min="1800"
+                                    max="2026"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="number"
+                                    label="Annual Operating Budget ($)" 
+                                    value={formData.annualBudget}
+                                    data-field="annualBudget"
+                                    formatter="currency"
+                                    step="0.01"
+                                    min="0"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <lightning-textarea 
+                                    label="Mission Statement" 
+                                    value={formData.missionStatement}
+                                    data-field="missionStatement"
+                                    max-length="1000"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-textarea>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <lightning-textarea 
+                                    label="Organization Address" 
+                                    value={formData.organizationAddress}
+                                    data-field="organizationAddress"
+                                    placeholder="123 Main Street, Baltimore, MD 21201"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-textarea>
+                            </div>
                         </div>
 
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                label="EIN (Tax ID)" 
-                                value={formData.ein}
-                                data-field="ein"
-                                placeholder="XX-XXXXXXX"
-                                pattern="\d{2}-\d{7}"
-                                message-when-pattern-mismatch="Format: XX-XXXXXXX"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
+                        <div class="section-header">
+                            <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                            <h2>Primary Contact</h2>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <lightning-input 
+                                    label="Contact Name" 
+                                    value={formData.contactName}
+                                    data-field="contactName"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    label="Title" 
+                                    value={formData.contactTitle}
+                                    data-field="contactTitle"
+                                    onchange={handleInputChange}
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="email"
+                                    label="Email" 
+                                    value={formData.contactEmail}
+                                    data-field="contactEmail"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="tel"
+                                    label="Phone" 
+                                    value={formData.contactPhone}
+                                    data-field="contactPhone"
+                                    placeholder="(443) 839-7298"
+                                    pattern="\(\d{3}\) \d{3}-\d{4}"
+                                    message-when-pattern-mismatch="Format: (XXX) XXX-XXXX"
+                                    onchange={handlePhoneChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
                         </div>
 
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="number"
-                                label="Year Founded" 
-                                value={formData.yearFounded}
-                                data-field="yearFounded"
-                                min="1800"
-                                max="2026"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
+                        <div class="section-header">
+                            <lightning-icon icon-name="standard:currency" size="small"></lightning-icon>
+                            <h2>Funding Request</h2>
+                        </div>
+                        
+                        <div class="form-grid three-col">
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="number"
+                                    label="Amount Requested ($)" 
+                                    value={formData.amountRequested}
+                                    data-field="amountRequested"
+                                    formatter="currency"
+                                    step="0.01"
+                                    min="0"
+                                    max="50000"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="number"
+                                    label="Total Project Cost ($)" 
+                                    value={formData.totalProjectCost}
+                                    data-field="totalProjectCost"
+                                    formatter="currency"
+                                    step="0.01"
+                                    min="0"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="number"
+                                    label="Number of Beneficiaries" 
+                                    value={formData.numBeneficiaries}
+                                    data-field="numBeneficiaries"
+                                    min="1"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
                         </div>
 
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="number"
-                                label="Annual Operating Budget ($)" 
-                                value={formData.annualBudget}
-                                data-field="annualBudget"
-                                formatter="currency"
-                                step="0.01"
-                                min="0"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-p-bottom_small">
-                            <lightning-textarea 
-                                label="Mission Statement" 
-                                value={formData.missionStatement}
-                                data-field="missionStatement"
-                                max-length="1000"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-textarea>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-p-bottom_small">
-                            <lightning-textarea 
-                                label="Organization Address" 
-                                value={formData.organizationAddress}
-                                data-field="organizationAddress"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-textarea>
-                        </div>
-                    </div>
-
-                    <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">Primary Contact</h2>
-                    
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                label="Contact Name" 
-                                value={formData.contactName}
-                                data-field="contactName"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                label="Title" 
-                                value={formData.contactTitle}
-                                data-field="contactTitle"
-                                onchange={handleInputChange}>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="email"
-                                label="Email" 
-                                value={formData.contactEmail}
-                                data-field="contactEmail"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="tel"
-                                label="Phone" 
-                                value={formData.contactPhone}
-                                data-field="contactPhone"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-                    </div>
-
-                    <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">Funding Request</h2>
-                    
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
-                            <lightning-input 
-                                type="number"
-                                label="Amount Requested ($)" 
-                                value={formData.amountRequested}
-                                data-field="amountRequested"
-                                formatter="currency"
-                                step="0.01"
-                                min="0"
-                                max="50000"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
-                            <lightning-input 
-                                type="number"
-                                label="Total Project Cost ($)" 
-                                value={formData.totalProjectCost}
-                                data-field="totalProjectCost"
-                                formatter="currency"
-                                step="0.01"
-                                min="0"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
-                            <lightning-input 
-                                type="number"
-                                label="Number of Beneficiaries" 
-                                value={formData.numBeneficiaries}
-                                data-field="numBeneficiaries"
-                                min="1"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-                    </div>
-
-                    <div class="slds-m-top_large slds-text-align_right">
-                        <lightning-button 
-                            label="Next: Project Details" 
-                            variant="brand" 
-                            onclick={handleNextSection}
-                            disabled={isNextDisabled}>
-                        </lightning-button>
-                    </div>
-                </div>
-            </template>
-
-            <template if:true={isSection2}>
-                <div class="slds-p-around_medium">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Project Details</h2>
-                    
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                label="Project Title" 
-                                value={formData.projectTitle}
-                                data-field="projectTitle"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-combobox
-                                label="Project Category"
-                                value={formData.projectCategory}
-                                data-field="projectCategory"
-                                options={projectCategoryOptions}
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-combobox>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-p-bottom_small">
-                            <lightning-textarea 
-                                label="Project Description" 
-                                value={formData.projectDescription}
-                                data-field="projectDescription"
-                                max-length="5000"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-textarea>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-p-bottom_small">
-                            <lightning-input 
-                                label="Target Population" 
-                                value={formData.targetPopulation}
-                                data-field="targetPopulation"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="date"
-                                label="Project Start Date" 
-                                value={formData.projectStartDate}
-                                data-field="projectStartDate"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
-                        </div>
-
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <lightning-input 
-                                type="date"
-                                label="Project End Date" 
-                                value={formData.projectEndDate}
-                                data-field="projectEndDate"
-                                onchange={handleInputChange}
-                                required>
-                            </lightning-input>
+                        <div class="form-actions">
+                            <lightning-button 
+                                label="Next: Project Details" 
+                                variant="brand" 
+                                onclick={handleNextSection}
+                                disabled={isNextDisabled}
+                                class="action-button">
+                            </lightning-button>
                         </div>
                     </div>
+                </template>
 
-                    <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">Supporting Documents (Optional)</h2>
-                    
-                    <div class="slds-box slds-theme_shade slds-p-around_medium">
-                        <p class="slds-text-body_small slds-m-bottom_small">
-                            Upload budget documents, letters of support, or other relevant files (PDF, DOC, XLS).
-                        </p>
+                <!-- Section 2: Project Details -->
+                <template if:true={isSection2}>
+                    <div class="form-content">
+                        <div class="section-header">
+                            <lightning-icon icon-name="standard:task" size="small"></lightning-icon>
+                            <h2>Project Details</h2>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <lightning-input 
+                                    label="Project Title" 
+                                    value={formData.projectTitle}
+                                    data-field="projectTitle"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
 
-                        <template if:true={hasUploadedFiles}>
-                            <div class="slds-m-top_small">
-                                <p class="slds-text-body_small slds-m-bottom_x-small">Uploaded Files:</p>
-                                <ul class="slds-list_dotted">
+                            <div class="form-field">
+                                <lightning-combobox
+                                    label="Project Category"
+                                    value={formData.projectCategory}
+                                    data-field="projectCategory"
+                                    options={projectCategoryOptions}
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-combobox>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <lightning-textarea 
+                                    label="Project Description" 
+                                    value={formData.projectDescription}
+                                    data-field="projectDescription"
+                                    max-length="5000"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-textarea>
+                            </div>
+
+                            <div class="form-field full-width">
+                                <lightning-input 
+                                    label="Target Population" 
+                                    value={formData.targetPopulation}
+                                    data-field="targetPopulation"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="date"
+                                    label="Project Start Date" 
+                                    value={formData.projectStartDate}
+                                    data-field="projectStartDate"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+
+                            <div class="form-field">
+                                <lightning-input 
+                                    type="date"
+                                    label="Project End Date" 
+                                    value={formData.projectEndDate}
+                                    data-field="projectEndDate"
+                                    onchange={handleInputChange}
+                                    required
+                                    class="custom-input">
+                                </lightning-input>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <lightning-icon icon-name="standard:file" size="small"></lightning-icon>
+                            <h2>Supporting Documents</h2>
+                            <span class="optional-badge">Optional</span>
+                        </div>
+                        
+                        <div class="file-upload-area">
+                            <p class="upload-hint">
+                                Upload budget documents, letters of support, or other relevant files (PDF, JPG, PNG - max 5MB each).
+                            </p>
+
+                            <input 
+                                type="file" 
+                                class="file-input-hidden"
+                                id="fileInput"
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                                onchange={handleFileSelect}
+                                multiple>
+                            
+                            <div class="upload-button-container">
+                                <lightning-button 
+                                    label="Choose Files" 
+                                    icon-name="utility:upload"
+                                    onclick={triggerFileInput}
+                                    variant="neutral">
+                                </lightning-button>
+                            </div>
+
+                            <template if:true={hasUploadedFiles}>
+                                <div class="file-list">
                                     <template for:each={uploadedFiles} for:item="file" for:index="index">
-                                        <li key={file.documentId} class="slds-p-vertical_xx-small">
-                                            {file.name}
+                                        <div key={file.name} class="file-item">
+                                            <lightning-icon icon-name="doctype:attachment" size="x-small"></lightning-icon>
+                                            <span class="file-name">{file.name}</span>
+                                            <span class="file-size">({file.sizeLabel})</span>
                                             <lightning-button-icon 
-                                                icon-name="utility:delete" 
+                                                icon-name="utility:close" 
                                                 variant="bare"
                                                 size="small"
                                                 alternative-text="Remove"
                                                 data-index={index}
-                                                onclick={handleRemoveFile}
-                                                class="slds-m-left_small">
+                                                onclick={handleRemoveFile}>
                                             </lightning-button-icon>
-                                        </li>
+                                        </div>
                                     </template>
-                                </ul>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="form-actions split">
+                            <lightning-button 
+                                label="Back" 
+                                variant="neutral" 
+                                onclick={handlePreviousSection}
+                                class="action-button">
+                            </lightning-button>
+                            <lightning-button 
+                                label="Review & Submit" 
+                                variant="brand" 
+                                onclick={handleNextToReview}
+                                class="action-button">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Section 3: Review & Submit -->
+                <template if:true={isSection3}>
+                    <div class="form-content review-section">
+                        <div class="section-header">
+                            <lightning-icon icon-name="utility:preview" size="small"></lightning-icon>
+                            <h2>Review Your Application</h2>
+                        </div>
+                        
+                        <p class="review-intro">Please review all information before submitting. Click "Edit" to make changes.</p>
+
+                        <!-- Organization Summary -->
+                        <div class="review-card">
+                            <div class="review-card-header">
+                                <h3>Organization Information</h3>
+                                <lightning-button 
+                                    label="Edit" 
+                                    variant="base" 
+                                    onclick={handleEditSection1}
+                                    icon-name="utility:edit">
+                                </lightning-button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Organization Name</span>
+                                    <span class="review-value">{formData.organizationName}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Organization Type</span>
+                                    <span class="review-value">{formData.organizationType}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">EIN</span>
+                                    <span class="review-value">{formData.ein}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Year Founded</span>
+                                    <span class="review-value">{formData.yearFounded}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Annual Budget</span>
+                                    <span class="review-value">
+                                        <lightning-formatted-number value={formData.annualBudget} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="review-item full-width">
+                                    <span class="review-label">Mission Statement</span>
+                                    <span class="review-value">{formData.missionStatement}</span>
+                                </div>
+                                <div class="review-item full-width">
+                                    <span class="review-label">Address</span>
+                                    <span class="review-value">{formData.organizationAddress}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Summary -->
+                        <div class="review-card">
+                            <div class="review-card-header">
+                                <h3>Primary Contact</h3>
+                                <lightning-button 
+                                    label="Edit" 
+                                    variant="base" 
+                                    onclick={handleEditSection1}
+                                    icon-name="utility:edit">
+                                </lightning-button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Name</span>
+                                    <span class="review-value">{formData.contactName}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Title</span>
+                                    <span class="review-value">{formData.contactTitle}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Email</span>
+                                    <span class="review-value">{formData.contactEmail}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Phone</span>
+                                    <span class="review-value">{formData.contactPhone}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Funding Summary -->
+                        <div class="review-card">
+                            <div class="review-card-header">
+                                <h3>Funding Request</h3>
+                                <lightning-button 
+                                    label="Edit" 
+                                    variant="base" 
+                                    onclick={handleEditSection1}
+                                    icon-name="utility:edit">
+                                </lightning-button>
+                            </div>
+                            <div class="review-grid three-col">
+                                <div class="review-item">
+                                    <span class="review-label">Amount Requested</span>
+                                    <span class="review-value highlight">
+                                        <lightning-formatted-number value={formData.amountRequested} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Total Project Cost</span>
+                                    <span class="review-value">
+                                        <lightning-formatted-number value={formData.totalProjectCost} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                    </span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Beneficiaries</span>
+                                    <span class="review-value">{formData.numBeneficiaries}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project Summary -->
+                        <div class="review-card">
+                            <div class="review-card-header">
+                                <h3>Project Details</h3>
+                                <lightning-button 
+                                    label="Edit" 
+                                    variant="base" 
+                                    onclick={handleEditSection2}
+                                    icon-name="utility:edit">
+                                </lightning-button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Project Title</span>
+                                    <span class="review-value">{formData.projectTitle}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Category</span>
+                                    <span class="review-value">{formData.projectCategory}</span>
+                                </div>
+                                <div class="review-item full-width">
+                                    <span class="review-label">Description</span>
+                                    <span class="review-value">{formData.projectDescription}</span>
+                                </div>
+                                <div class="review-item full-width">
+                                    <span class="review-label">Target Population</span>
+                                    <span class="review-value">{formData.targetPopulation}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Start Date</span>
+                                    <span class="review-value">{formData.projectStartDate}</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">End Date</span>
+                                    <span class="review-value">{formData.projectEndDate}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents Summary -->
+                        <template if:true={hasUploadedFiles}>
+                            <div class="review-card">
+                                <div class="review-card-header">
+                                    <h3>Supporting Documents</h3>
+                                    <lightning-button 
+                                        label="Edit" 
+                                        variant="base" 
+                                        onclick={handleEditSection2}
+                                        icon-name="utility:edit">
+                                    </lightning-button>
+                                </div>
+                                <div class="review-files">
+                                    <template for:each={uploadedFiles} for:item="file">
+                                        <div key={file.name} class="review-file-item">
+                                            <lightning-icon icon-name="doctype:attachment" size="x-small"></lightning-icon>
+                                            <span>{file.name}</span>
+                                            <span class="file-size">({file.sizeLabel})</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Eligibility Summary -->
+                        <div class="review-card eligibility-summary">
+                            <div class="review-card-header">
+                                <h3>Eligibility Status</h3>
+                                <span class={eligibilitySummaryBadgeClass}>{eligibilityStatusLabel}</span>
+                            </div>
+                            <div class="eligibility-summary-grid">
+                                <template for:each={allRules} for:item="rule">
+                                    <div key={rule.ruleId} class="eligibility-summary-item {rule.statusClass}">
+                                        <lightning-icon icon-name={rule.iconName} size="xx-small"></lightning-icon>
+                                        <span>{rule.ruleName}</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Submit Actions -->
+                        <div class="submit-section">
+                            <div class="submit-notice">
+                                <lightning-icon icon-name="utility:info" size="x-small"></lightning-icon>
+                                <span>By submitting, you certify that all information provided is accurate and complete.</span>
+                            </div>
+                            <div class="form-actions split">
+                                <lightning-button 
+                                    label="Back to Project Details" 
+                                    variant="neutral" 
+                                    onclick={handlePreviousSection}
+                                    class="action-button">
+                                </lightning-button>
+                                <lightning-button 
+                                    label="Submit Application" 
+                                    variant="brand" 
+                                    onclick={handleSubmit}
+                                    disabled={isLoading}
+                                    class="action-button submit-button">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isLoading}>
+                    <div class="loading-overlay">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Right Side: Eligibility Panel (Always Visible) -->
+            <div class="eligibility-section">
+                <div class="eligibility-card">
+                    <div class="eligibility-header">
+                        <lightning-icon icon-name="utility:checklist" size="small"></lightning-icon>
+                        <h3>Eligibility Check</h3>
+                    </div>
+                    
+                    <div class="eligibility-status {eligibilityStatusColorClass}">
+                        <template if:true={hasEligibilityResult}>
+                            <div class="status-icon">
+                                <lightning-icon icon-name={eligibilityStatusIcon} size="small"></lightning-icon>
+                            </div>
+                            <div class="status-text">
+                                <span class="status-label">{eligibilityStatusLabel}</span>
+                                <span class="status-count">{eligibilityResult.totalPassed} of 6 criteria met</span>
+                            </div>
+                        </template>
+                        <template if:false={hasEligibilityResult}>
+                            <div class="status-text">
+                                <span class="status-label">Not Yet Evaluated</span>
+                                <span class="status-count">Fill in the form to check eligibility</span>
                             </div>
                         </template>
                     </div>
 
-                    <div class="slds-m-top_large slds-grid slds-grid_align-spread">
-                        <lightning-button 
-                            label="Back" 
-                            variant="neutral" 
-                            onclick={handlePreviousSection}>
-                        </lightning-button>
-                        <lightning-button 
-                            label="Submit Application" 
-                            variant="brand" 
-                            onclick={handleSubmit}
-                            disabled={isLoading}>
-                        </lightning-button>
+                    <div class="eligibility-rules">
+                        <template for:each={allRules} for:item="rule">
+                            <div key={rule.ruleId} class="rule-item {rule.statusClass}">
+                                <div class="rule-icon">
+                                    <lightning-icon 
+                                        icon-name={rule.iconName}
+                                        size="xx-small"
+                                        alternative-text={rule.altText}>
+                                    </lightning-icon>
+                                </div>
+                                <div class="rule-content">
+                                    <span class="rule-name">{rule.ruleName}</span>
+                                    <span class="rule-message">{rule.message}</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="eligibility-note">
+                        <lightning-icon icon-name="utility:info" size="xx-small"></lightning-icon>
+                        <span>You can still submit if not fully eligible. The reviewer will make the final decision.</span>
                     </div>
                 </div>
-            </template>
 
-            <template if:true={isLoading}>
-                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
-            </template>
-        </template>
-    </lightning-card>
+                <!-- Quick Help Card -->
+                <div class="help-card">
+                    <div class="help-header">
+                        <lightning-icon icon-name="utility:help" size="small"></lightning-icon>
+                        <h3>Need Help?</h3>
+                    </div>
+                    <ul class="help-list">
+                        <li>Maximum grant amount: <strong>$50,000</strong></li>
+                        <li>Organization must be at least <strong>2 years old</strong></li>
+                        <li>Annual budget must be under <strong>$2 million</strong></li>
+                        <li>Project must serve at least <strong>50 beneficiaries</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
 </template>

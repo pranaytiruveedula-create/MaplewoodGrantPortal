@@ -44,12 +44,12 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
 
     getStatusClass(status) {
         const classes = {
-            'Submitted': 'slds-badge slds-badge_lightest',
-            'Under Review': 'slds-badge badge-review',
-            'Approved': 'slds-badge slds-theme_success',
-            'Rejected': 'slds-badge slds-theme_error'
+            'Submitted': 'status-badge badge-submitted',
+            'Under Review': 'status-badge badge-review',
+            'Approved': 'status-badge badge-approved',
+            'Rejected': 'status-badge badge-rejected'
         };
-        return classes[status] || 'slds-badge';
+        return classes[status] || 'status-badge';
     }
 
     getStatusIcon(status) {
@@ -127,14 +127,5 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
     get showAwardDetails() {
         return this.selectedApplication?.Status__c === 'Approved' && 
                this.selectedApplication?.Award_Amount__c;
-    }
-
-    get awardBreakdown() {
-        if (!this.selectedApplication?.Award_Breakdown__c) return null;
-        try {
-            return JSON.parse(this.selectedApplication.Award_Breakdown__c);
-        } catch (e) {
-            return null;
-        }
     }
 }

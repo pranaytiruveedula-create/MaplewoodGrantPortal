@@ -1,0 +1,12 @@
+{
+  "type" : "sfdc_cms__route",
+  "title" : "Apply",
+  "contentBody" : {
+    "activeViewId" : "Apply",
+    "configurationTags" : [ ],
+    "pageAccess" : "UseParent",
+    "routeType" : "custom-apply",
+    "urlPrefix" : "apply"
+  },
+  "urlName" : "apply"
+}

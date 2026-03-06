@@ -1,0 +1,56 @@
+<template>
+    <header class="site-header">
+        <div class="header-container">
+            <!-- Logo and Title -->
+            <div class="header-brand">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="brand-text">
+                    <h1 class="site-title">Maplewood County</h1>
+                    <p class="site-subtitle">Community Development Grant Program</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="header-nav">
+                <a href="/grants/s/" class="nav-link" data-page="home">
+                    <lightning-icon icon-name="utility:home" size="x-small"></lightning-icon>
+                    <span>Home</span>
+                </a>
+                <a href="/grants/s/my-applications" class="nav-link" data-page="applications">
+                    <lightning-icon icon-name="utility:file" size="x-small"></lightning-icon>
+                    <span>My Applications</span>
+                </a>
+                <a href="/grants/s/apply" class="nav-link nav-link-primary" data-page="apply">
+                    <lightning-icon icon-name="utility:add" size="x-small"></lightning-icon>
+                    <span>Apply Now</span>
+                </a>
+            </nav>
+
+            <!-- User Menu -->
+            <div class="header-user">
+                <template if:true={isLoggedIn}>
+                    <div class="user-info">
+                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                        <span class="user-name">{userName}</span>
+                    </div>
+                    <a href="/grants/secur/logout.jsp?retURL=/grants/s/login" class="logout-link">
+                        <lightning-icon icon-name="utility:logout" size="x-small"></lightning-icon>
+                        <span>Logout</span>
+                    </a>
+                </template>
+                <template if:false={isLoggedIn}>
+                    <a href="/grants/s/login" class="login-link">
+                        <lightning-icon icon-name="utility:login" size="x-small"></lightning-icon>
+                        <span>Login</span>
+                    </a>
+                </template>
+            </div>
+        </div>
+    </header>
+</template>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email sent to applicants when their grant application status changes</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Application Status Update</name>
+    <style>none</style>
+    <subject>Maplewood Grant Application Status Update - {{{Grant_Application__c.Name}}}</subject>
+    <type>text</type>
+</EmailTemplate>

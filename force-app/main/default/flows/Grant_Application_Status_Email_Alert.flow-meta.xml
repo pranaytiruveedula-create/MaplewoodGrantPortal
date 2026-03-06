@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <decisions>
+        <name>Check_Status_Changed</name>
+        <label>Check Status Changed</label>
+        <locationX>176</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Status Not Changed</defaultConnectorLabel>
+        <rules>
+            <name>Status_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record__Prior.Status__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Contact_Email__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Status_Update_Email</targetReference>
+            </connector>
+            <label>Status Changed</label>
+        </rules>
+    </decisions>
+    <description>Sends an email notification to applicants when their grant application status changes</description>
+    <environments>Default</environments>
+    <interviewLabel>Grant Application Status Email Alert {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Grant Application Status Email Alert</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <actionCalls>
+        <name>Send_Status_Update_Email</name>
+        <label>Send Status Update Email</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Contact_Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>EmailSubject</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>EmailBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>CurrentUser</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <formulas>
+        <name>EmailSubject</name>
+        <dataType>String</dataType>
+        <expression>&quot;Maplewood Grant Application Status Update - &quot; &amp; {!$Record.Name}</expression>
+    </formulas>
+    <formulas>
+        <name>EmailBody</name>
+        <dataType>String</dataType>
+        <expression>&quot;Dear &quot; &amp; {!$Record.Contact_Name__c} &amp; &quot;,&quot; &amp; BR() &amp; BR() &amp;
+&quot;We are writing to inform you about an update to your grant application.&quot; &amp; BR() &amp; BR() &amp;
+&quot;APPLICATION DETAILS:&quot; &amp; BR() &amp;
+&quot;- Application Number: &quot; &amp; {!$Record.Name} &amp; BR() &amp;
+&quot;- Organization: &quot; &amp; {!$Record.Organization_Name__c} &amp; BR() &amp;
+&quot;- Project Title: &quot; &amp; {!$Record.Project_Title__c} &amp; BR() &amp;
+&quot;- Amount Requested: $&quot; &amp; TEXT({!$Record.Amount_Requested__c}) &amp; BR() &amp; BR() &amp;
+&quot;STATUS UPDATE:&quot; &amp; BR() &amp;
+&quot;Your application status has been updated to: &quot; &amp; TEXT({!$Record.Status__c}) &amp; BR() &amp; BR() &amp;
+IF(ISPICKVAL({!$Record.Status__c}, &quot;Under Review&quot;),
+    &quot;Our review committee is currently evaluating your proposal. You will receive another notification once a decision has been made.&quot;,
+IF(ISPICKVAL({!$Record.Status__c}, &quot;Approved&quot;),
+    &quot;Congratulations! Your application has been approved. Your award amount is: $&quot; &amp; TEXT({!$Record.Award_Amount__c}) &amp; &quot;. You will receive separate instructions regarding fund disbursement.&quot;,
+IF(ISPICKVAL({!$Record.Status__c}, &quot;Rejected&quot;),
+    &quot;Unfortunately, your application was not selected for funding at this time. We encourage you to apply again in the future.&quot;,
+    &quot;Please log in to the portal for more details.&quot;
+))) &amp; BR() &amp; BR() &amp;
+&quot;You can log in to the Maplewood Grant Portal to view your full application details.&quot; &amp; BR() &amp; BR() &amp;
+&quot;Best regards,&quot; &amp; BR() &amp;
+&quot;Maplewood County Grants Office&quot;</expression>
+    </formulas>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Status_Changed</targetReference>
+        </connector>
+        <object>Grant_Application__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

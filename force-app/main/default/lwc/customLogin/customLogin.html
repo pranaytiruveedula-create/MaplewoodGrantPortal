@@ -1,0 +1,84 @@
+<template>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon">
+                    <lightning-icon icon-name="custom:custom62" size="medium"></lightning-icon>
+                </div>
+                <h1 class="login-title">Welcome Back</h1>
+                <p class="login-subtitle">Sign in to Maplewood Grant Portal</p>
+            </div>
+
+            <template if:true={errorMessage}>
+                <div class="error-banner" role="alert">
+                    <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                    <span>{errorMessage}</span>
+                </div>
+            </template>
+
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="username"
+                        class="form-input"
+                        placeholder="Enter your email"
+                        value={username}
+                        oninput={handleUsernameChange}
+                        onkeypress={handleKeyPress}
+                        autocomplete="username"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-wrapper">
+                        <input 
+                            type={passwordType}
+                            id="password"
+                            class="form-input password-input"
+                            placeholder="Enter your password"
+                            value={password}
+                            oninput={handlePasswordChange}
+                            onkeypress={handleKeyPress}
+                            autocomplete="current-password"
+                        />
+                        <button 
+                            type="button" 
+                            class="toggle-password-btn"
+                            onclick={togglePasswordVisibility}
+                            title={eyeTitle}
+                            aria-label={eyeTitle}
+                        >
+                            <lightning-icon icon-name={eyeIcon} size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="forgot-password-row">
+                    <a href={forgotPasswordLink} class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <button 
+                    class="login-button"
+                    onclick={handleLogin}
+                    disabled={isLoginDisabled}
+                >
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Signing in" size="small"></lightning-spinner>
+                        <span>Signing in...</span>
+                    </template>
+                    <template if:false={isLoading}>
+                        <span>Sign In</span>
+                    </template>
+                </button>
+            </div>
+
+            <div class="register-section">
+                <span class="register-text">Don't have an account?</span>
+                <a href={registerLink} class="register-link">Create Account</a>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,25 @@
+Dear {{{Grant_Application__c.Contact_Name__c}}},
+
+We are writing to inform you about an update to your grant application.
+
+APPLICATION DETAILS:
+- Application Number: {{{Grant_Application__c.Name}}}
+- Organization: {{{Grant_Application__c.Organization_Name__c}}}
+- Project Title: {{{Grant_Application__c.Project_Title__c}}}
+- Amount Requested: {{{Grant_Application__c.Amount_Requested__c}}}
+
+STATUS UPDATE:
+Your application status has been updated to: {{{Grant_Application__c.Status__c}}}
+
+WHAT'S NEXT:
+- If your application is "Under Review": Our review committee is evaluating your proposal. You will receive another notification once a decision has been made.
+- If your application is "Approved": Congratulations! Your award amount is {{{Grant_Application__c.Award_Amount__c}}}. You will receive separate instructions regarding fund disbursement.
+- If your application is "Rejected": We encourage you to apply again in the future. Please review the feedback provided and consider reapplying in the next grant cycle.
+
+You can log in to the Maplewood Grant Portal to view your full application details and any reviewer comments.
+
+Thank you for your interest in the Maplewood County Community Development Grant Program.
+
+Best regards,
+Maplewood County Grants Office
+grants@maplewoodcounty.gov

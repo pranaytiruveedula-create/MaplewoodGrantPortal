@@ -75,12 +75,15 @@ public with sharing class GrantApplicationController {
             application.Status__c = 'Submitted';
             application.Submission_Date__c = Date.today();
             
-            insert application;
+            SObjectAccessDecision decision = Security.stripInaccessible(AccessType.CREATABLE, new List<Grant_Application__c>{application});
+            insert decision.getRecords();
+            Id insertedId = decision.getRecords()[0].Id;
             
             Grant_Application__c inserted = [
                 SELECT Id, Name 
                 FROM Grant_Application__c 
-                WHERE Id = :application.Id
+                WHERE Id = :insertedId
+                WITH USER_MODE
             ];
             
             if (wrapper.files != null && !wrapper.files.isEmpty()) {
@@ -133,7 +136,6 @@ public with sharing class GrantApplicationController {
             cdl.ContentDocumentId = cv.ContentDocumentId;
             cdl.LinkedEntityId = applicationId;
             cdl.ShareType = 'V';
-            cdl.Visibility = 'AllUsers';
             links.add(cdl);
         }
         
@@ -156,45 +158,103 @@ public with sharing class GrantApplicationController {
         history.New_Status__c = newStatus;
         history.Changed_At__c = DateTime.now();
         history.Comments__c = comments;
-        insert history;
+        SObjectAccessDecision decision = Security.stripInaccessible(AccessType.CREATABLE, new List<Status_History__c>{history});
+        insert decision.getRecords();
     }
     
     @AuraEnabled(cacheable=true)
     public static List<Grant_Application__c> getMyApplications() {
-        return [
-            SELECT Id, Name, Organization_Name__c, Organization_Type__c, 
-                   Year_Founded__c, Annual_Budget__c, Project_Title__c, 
-                   Project_Category__c, Project_Description__c,
-                   Status__c, Amount_Requested__c, Total_Project_Cost__c,
-                   Num_Beneficiaries__c, Award_Amount__c, Award_Breakdown__c,
-                   Eligibility_Results__c, Reviewer_Comments__c,
-                   Submission_Date__c, CreatedDate
-            FROM Grant_Application__c
-            WHERE CreatedById = :UserInfo.getUserId()
-            ORDER BY CreatedDate DESC
-            LIMIT 50
-        ];
+        String query = buildAccessibleFieldsQuery(
+            new List<String>{
+                'Id', 'Name', 'Organization_Name__c', 'Organization_Type__c',
+                'Year_Founded__c', 'Annual_Budget__c', 'Project_Title__c',
+                'Project_Category__c', 'Project_Description__c',
+                'Status__c', 'Amount_Requested__c', 'Total_Project_Cost__c',
+                'Num_Beneficiaries__c', 'Award_Amount__c',
+                'Eligibility_Results__c', 'Reviewer_Comments__c',
+                'Submission_Date__c', 'CreatedDate'
+            },
+            'Grant_Application__c',
+            'CreatedById = :userId',
+            'CreatedDate DESC',
+            50
+        );
+        
+        Id userId = UserInfo.getUserId();
+        List<Grant_Application__c> apps = Database.query(query);
+        return apps;
     }
     
     @AuraEnabled(cacheable=true)
     public static Grant_Application__c getApplicationDetails(String applicationId) {
         try {
-            return [
-                SELECT Id, Name, Organization_Name__c, Organization_Type__c, EIN__c,
-                       Year_Founded__c, Annual_Budget__c, Mission_Statement__c,
-                       Organization_Address__c, Contact_Name__c, Contact_Title__c,
-                       Contact_Email__c, Contact_Phone__c, Project_Title__c,
-                       Project_Category__c, Project_Description__c, Target_Population__c,
-                       Project_Start_Date__c, Project_End_Date__c, Amount_Requested__c,
-                       Total_Project_Cost__c, Num_Beneficiaries__c, Status__c,
-                       Submission_Date__c, Eligibility_Results__c, Award_Amount__c,
-                       Reviewer_Comments__c, Review_Score__c
-                FROM Grant_Application__c
-                WHERE Id = :applicationId
-                LIMIT 1
-            ];
+            String query = buildAccessibleFieldsQuery(
+                new List<String>{
+                    'Id', 'Name', 'Organization_Name__c', 'Organization_Type__c', 'EIN__c',
+                    'Year_Founded__c', 'Annual_Budget__c', 'Mission_Statement__c',
+                    'Organization_Address__c', 'Contact_Name__c', 'Contact_Title__c',
+                    'Contact_Email__c', 'Contact_Phone__c', 'Project_Title__c',
+                    'Project_Category__c', 'Project_Description__c', 'Target_Population__c',
+                    'Project_Start_Date__c', 'Project_End_Date__c', 'Amount_Requested__c',
+                    'Total_Project_Cost__c', 'Num_Beneficiaries__c', 'Status__c',
+                    'Submission_Date__c', 'Eligibility_Results__c', 'Award_Amount__c',
+                    'Reviewer_Comments__c'
+                },
+                'Grant_Application__c',
+                'Id = :applicationId',
+                null,
+                1
+            );
+            
+            List<Grant_Application__c> apps = Database.query(query);
+            if (apps.isEmpty()) {
+                throw new AuraHandledException('Application not found or you do not have access.');
+            }
+            return apps[0];
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Application not found or you do not have access.');
         }
+    }
+    
+    private static String buildAccessibleFieldsQuery(
+        List<String> requestedFields,
+        String objectName,
+        String whereClause,
+        String orderBy,
+        Integer limitRows
+    ) {
+        Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+        Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
+        
+        List<String> accessibleFields = new List<String>();
+        for (String fieldName : requestedFields) {
+            String fieldKey = fieldName.toLowerCase();
+            if (fieldKey == 'id' || fieldKey == 'name' || fieldKey == 'createddate') {
+                accessibleFields.add(fieldName);
+            } else if (fieldMap.containsKey(fieldKey)) {
+                Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldKey).getDescribe();
+                if (fieldDescribe.isAccessible()) {
+                    accessibleFields.add(fieldName);
+                }
+            }
+        }
+        
+        String query = 'SELECT ' + String.join(accessibleFields, ', ') + ' FROM ' + objectName;
+        
+        if (String.isNotBlank(whereClause)) {
+            query += ' WHERE ' + whereClause;
+        }
+        
+        if (String.isNotBlank(orderBy)) {
+            query += ' ORDER BY ' + orderBy;
+        }
+        
+        if (limitRows != null && limitRows > 0) {
+            query += ' LIMIT ' + limitRows;
+        }
+        
+        return query;
     }
 }

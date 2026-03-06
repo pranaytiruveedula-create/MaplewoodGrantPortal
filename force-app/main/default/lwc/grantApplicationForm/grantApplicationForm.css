@@ -1,15 +1,937 @@
 :host {
     display: block;
+    font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.slds-theme_success {
-    background-color: #d4edda;
-    border: 1px solid #28a745;
-    border-radius: 0.25rem;
+/* Site Header */
+.site-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2b6cb0 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
 }
 
-.slds-theme_error {
-    background-color: #f8d7da;
-    border: 1px solid #dc3545;
-    border-radius: 0.25rem;
+.site-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #48bb78 0%, #38a169 50%, #2f855a 100%);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.logout-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.logout-button lightning-icon {
+    pointer-events: none;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #48bb78;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.site-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.site-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 2px 0 0 0;
+    font-weight: 500;
+}
+
+/* Main Layout */
+.form-wrapper {
+    display: flex;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    min-height: 100vh;
+}
+
+/* Form Section (Left) */
+.form-section {
+    flex: 1;
+    max-width: 800px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #032d60 0%, #0070d2 100%);
+    padding: 32px;
+    color: white;
+}
+
+.form-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Progress Steps */
+.progress-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 32px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.step.active {
+    opacity: 1;
+}
+
+.step.completed {
+    opacity: 1;
+}
+
+.step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e5e5e5;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+    background: #0070d2;
+    color: white;
+}
+
+.step.completed .step-number {
+    background: #04844b;
+    color: white;
+}
+
+.step-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.step-connector {
+    width: 80px;
+    height: 2px;
+    background: #e5e5e5;
+    margin: 0 16px;
+}
+
+/* Form Content */
+.form-content {
+    padding: 32px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #032d60;
+    margin: 0;
+}
+
+.section-header:not(:first-child) {
+    margin-top: 40px;
+}
+
+.optional-badge {
+    background: #e5e5e5;
+    color: #666;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+}
+
+.form-grid.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Ensure lightning-input error messages don't overlap */
+lightning-input,
+lightning-combobox,
+lightning-textarea {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.form-field {
+    position: relative;
+    min-height: 85px;
+    margin-bottom: 8px;
+}
+
+.form-field.full-width {
+    grid-column: 1 / -1;
+    min-height: auto;
+}
+
+/* Custom Input Styling */
+.custom-input {
+    --slds-c-input-radius-border: 8px;
+}
+
+.custom-input::part(help-text) {
+    margin-top: 4px;
+}
+
+/* Form Actions */
+.form-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-actions.split {
+    justify-content: space-between;
+}
+
+.action-button {
+    min-width: 160px;
+}
+
+/* File Upload */
+.file-upload-area {
+    background: #f8f9fb;
+    border: 2px dashed #d8dde6;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #0070d2;
+    background: #f0f7ff;
+}
+
+.upload-hint {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 16px 0;
+}
+
+.upload-button-container {
+    margin-bottom: 16px;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.file-list {
+    text-align: left;
+    margin-top: 16px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.file-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #999;
+}
+
+/* Eligibility Section (Right) */
+.eligibility-section {
+    width: 340px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+}
+
+.eligibility-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.eligibility-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px;
+    background: #032d60;
+    color: white;
+}
+
+.eligibility-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Eligibility Status */
+.eligibility-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.eligibility-status.eligible {
+    background: #e8f5e9;
+}
+
+.eligibility-status.not-eligible {
+    background: #ffebee;
+}
+
+.eligibility-status.pending {
+    background: #f5f5f5;
+}
+
+.status-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+.eligibility-status.eligible .status-icon {
+    background: #04844b;
+    color: white;
+}
+
+.eligibility-status.not-eligible .status-icon {
+    background: #c23934;
+    color: white;
+}
+
+.status-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.status-count {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Eligibility Rules */
+.eligibility-rules {
+    padding: 16px 24px;
+}
+
+.rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rule-item:last-child {
+    border-bottom: none;
+}
+
+.rule-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #e5e5e5;
+}
+
+.rule-item.passed .rule-icon {
+    background: #e8f5e9;
+    color: #04844b;
+}
+
+.rule-item.failed .rule-icon {
+    background: #ffebee;
+    color: #c23934;
+}
+
+.rule-item.pending .rule-icon {
+    background: #f5f5f5;
+    color: #999;
+}
+
+.rule-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rule-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.rule-message {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Eligibility Note */
+.eligibility-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px 24px;
+    background: #fffbea;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Help Card */
+.help-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.help-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.help-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.help-list {
+    list-style: none;
+    padding: 16px 24px;
+    margin: 0;
+}
+
+.help-list li {
+    font-size: 13px;
+    color: #666;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.help-list li:last-child {
+    border-bottom: none;
+}
+
+.help-list strong {
+    color: #032d60;
+}
+
+/* Confirmation Screen */
+.confirmation-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.confirmation-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+    padding: 48px;
+    text-align: center;
+    max-width: 500px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: #04844b;
+}
+
+.confirmation-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #032d60;
+    margin: 0 0 16px 0;
+}
+
+.confirmation-number {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 16px 0;
+}
+
+.confirmation-message {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+/* Review Section */
+.review-section {
+    padding: 24px 32px;
+}
+
+.review-intro {
+    font-size: 15px;
+    color: #666;
+    margin: 0 0 24px 0;
+    padding: 16px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    border-left: 4px solid #0070d2;
+}
+
+.review-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.review-card-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #032d60;
+    margin: 0;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    padding: 0;
+}
+
+.review-grid.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.review-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+}
+
+.review-item:nth-child(2n) {
+    border-right: none;
+}
+
+.review-grid.three-col .review-item:nth-child(2n) {
+    border-right: 1px solid #f0f0f0;
+}
+
+.review-grid.three-col .review-item:nth-child(3n) {
+    border-right: none;
+}
+
+.review-item.full-width {
+    grid-column: 1 / -1;
+    border-right: none;
+}
+
+.review-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.review-value {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.review-value.highlight {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0070d2;
+}
+
+/* Review Files */
+.review-files {
+    padding: 16px 20px;
+}
+
+.review-file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #333;
+}
+
+.review-file-item:last-child {
+    border-bottom: none;
+}
+
+.review-file-item .file-size {
+    color: #999;
+    font-size: 12px;
+}
+
+/* Eligibility Summary in Review */
+.eligibility-summary {
+    background: #f8f9fb;
+}
+
+.eligibility-summary .review-card-header {
+    background: #ffffff;
+}
+
+.eligibility-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 20px;
+}
+
+.eligibility-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #333;
+    border: 1px solid #e5e5e5;
+}
+
+.eligibility-summary-item.passed {
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+    color: #1b5e20;
+}
+
+.eligibility-summary-item.passed lightning-icon {
+    color: #04844b;
+}
+
+.eligibility-summary-item.failed {
+    background: #ffebee;
+    border-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+.eligibility-summary-item.failed lightning-icon {
+    color: #c23934;
+}
+
+.eligibility-summary-item.pending {
+    background: #fafafa;
+    color: #999;
+}
+
+.eligibility-summary-item.pending lightning-icon {
+    color: #999;
+}
+
+/* Badge */
+.badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-eligible {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.badge-not-eligible {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.badge-pending {
+    background: #f5f5f5;
+    color: #666;
+}
+
+/* Submit Section */
+.submit-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid #e5e5e5;
+}
+
+.submit-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #fffbea;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.submit-button {
+    min-width: 200px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .form-wrapper {
+        flex-direction: column;
+    }
+
+    .form-section {
+        max-width: 100%;
+    }
+
+    .eligibility-section {
+        width: 100%;
+        position: static;
+    }
+
+    .form-grid.three-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .review-grid.three-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .eligibility-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .form-wrapper {
+        padding: 16px;
+    }
+
+    .form-header {
+        padding: 24px;
+    }
+
+    .form-title {
+        font-size: 22px;
+    }
+
+    .form-content {
+        padding: 24px;
+    }
+
+    .form-grid,
+    .form-grid.three-col {
+        grid-template-columns: 1fr;
+    }
+
+    .progress-container {
+        padding: 16px;
+    }
+
+    .step-label {
+        display: none;
+    }
+
+    .step-connector {
+        width: 30px;
+    }
+
+    .review-grid,
+    .review-grid.three-col {
+        grid-template-columns: 1fr;
+    }
+
+    .review-item {
+        border-right: none;
+    }
+
+    .eligibility-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-section .form-actions.split {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .submit-section .action-button {
+        width: 100%;
+    }
 }

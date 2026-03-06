@@ -32,21 +32,50 @@
     margin-right: auto;
 }
 
+.button-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.register-btn,
 .login-btn {
     display: inline-block;
     padding: 14px 36px;
-    background: #fbad18;
-    color: #003068;
     font-size: 16px;
     font-weight: 700;
-    border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-width: 140px;
+}
+
+.register-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.register-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.register-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+.login-btn {
+    background: #fbad18;
+    color: #003068;
+    border: 2px solid #fbad18;
 }
 
 .login-btn:hover {
     background: #f0a000;
+    border-color: #f0a000;
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(251, 173, 24, 0.4);
 }

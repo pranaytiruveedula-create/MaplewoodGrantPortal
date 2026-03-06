@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>A guided wizard for applicants to submit grant applications step by step</description>
+    <environments>Default</environments>
+    <interviewLabel>Grant Application Wizard {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Grant Application Wizard</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <name>Welcome_Screen</name>
+        <label>Welcome</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Organization_Info_Screen</targetReference>
+        </connector>
+        <fields>
+            <name>Welcome_Header</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 24px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Welcome to the Maplewood County Grant Application&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Welcome_Instructions</name>
+            <fieldText>&lt;p&gt;Thank you for your interest in the Community Development Grant Program. This wizard will guide you through the application process.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Before you begin, please have the following ready:&lt;/b&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Organization details (EIN, founding year, annual budget)&lt;/li&gt;&lt;li&gt;Contact information&lt;/li&gt;&lt;li&gt;Project description and timeline&lt;/li&gt;&lt;li&gt;Budget information (requested amount, total project cost)&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Eligibility Requirements:&lt;/b&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Must be a registered 501(c)(3) nonprofit&lt;/li&gt;&lt;li&gt;Organization must be at least 2 years old&lt;/li&gt;&lt;li&gt;Annual budget between $100,000 and $5,000,000&lt;/li&gt;&lt;li&gt;Request amount: $5,000 - $50,000&lt;/li&gt;&lt;/ul&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Start Application</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Organization_Info_Screen</name>
+        <label>Organization Information</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Contact_Info_Screen</targetReference>
+        </connector>
+        <fields>
+            <name>Org_Section_Header</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 18px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Step 1: Organization Information&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Tell us about your organization.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Organization_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Organization Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Organization_Type</name>
+            <choiceReferences>OrgType_501c3</choiceReferences>
+            <choiceReferences>OrgType_Other</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Organization Type</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>EIN</name>
+            <dataType>String</dataType>
+            <fieldText>EIN (Tax ID)</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>Format: XX-XXXXXXX</helpText>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Year_Founded</name>
+            <dataType>Number</dataType>
+            <fieldText>Year Founded</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>0</scale>
+        </fields>
+        <fields>
+            <name>Annual_Budget</name>
+            <dataType>Currency</dataType>
+            <fieldText>Annual Operating Budget</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>2</scale>
+        </fields>
+        <fields>
+            <name>Mission_Statement</name>
+            <fieldText>Mission Statement</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Organization_Address</name>
+            <dataType>String</dataType>
+            <fieldText>Organization Address</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Next: Contact Info</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Contact_Info_Screen</name>
+        <label>Contact Information</label>
+        <locationX>176</locationX>
+        <locationY>398</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Project_Info_Screen</targetReference>
+        </connector>
+        <fields>
+            <name>Contact_Section_Header</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 18px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Step 2: Contact Information&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Who should we contact about this application?&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Contact_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Contact Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Contact_Title</name>
+            <dataType>String</dataType>
+            <fieldText>Contact Title</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Contact_Email</name>
+            <dataType>String</dataType>
+            <fieldText>Contact Email</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>Please enter a valid email address</errorMessage>
+                <formulaExpression>REGEX({!Contact_Email}, &quot;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$&quot;)</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Contact_Phone</name>
+            <dataType>String</dataType>
+            <fieldText>Contact Phone</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Next: Project Details</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Project_Info_Screen</name>
+        <label>Project Information</label>
+        <locationX>176</locationX>
+        <locationY>518</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Budget_Screen</targetReference>
+        </connector>
+        <fields>
+            <name>Project_Section_Header</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 18px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Step 3: Project Details&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Describe the project you&apos;re seeking funding for.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Project_Title</name>
+            <dataType>String</dataType>
+            <fieldText>Project Title</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Project_Category</name>
+            <choiceReferences>Category_Youth</choiceReferences>
+            <choiceReferences>Category_Senior</choiceReferences>
+            <choiceReferences>Category_Arts</choiceReferences>
+            <choiceReferences>Category_Workforce</choiceReferences>
+            <choiceReferences>Category_Health</choiceReferences>
+            <choiceReferences>Category_Safety</choiceReferences>
+            <choiceReferences>Category_Other</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Project Category</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Project_Description</name>
+            <fieldText>Project Description</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>Describe the project goals, activities, and expected outcomes.</helpText>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Num_Beneficiaries</name>
+            <dataType>Number</dataType>
+            <fieldText>Expected Number of Beneficiaries</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>0</scale>
+        </fields>
+        <fields>
+            <name>Project_Start_Date</name>
+            <dataType>Date</dataType>
+            <fieldText>Project Start Date</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Project_End_Date</name>
+            <dataType>Date</dataType>
+            <fieldText>Project End Date</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Next: Budget</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Budget_Screen</name>
+        <label>Budget Information</label>
+        <locationX>176</locationX>
+        <locationY>638</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Review_Screen</targetReference>
+        </connector>
+        <fields>
+            <name>Budget_Section_Header</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 18px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Step 4: Budget Information&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Enter your funding request details.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Amount_Requested</name>
+            <dataType>Currency</dataType>
+            <fieldText>Amount Requested</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>Enter an amount between $5,000 and $50,000</helpText>
+            <isRequired>true</isRequired>
+            <scale>2</scale>
+            <validationRule>
+                <errorMessage>Amount must be between $5,000 and $50,000</errorMessage>
+                <formulaExpression>{!Amount_Requested} &gt;= 5000 &amp;&amp; {!Amount_Requested} &lt;= 50000</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Total_Project_Cost</name>
+            <dataType>Currency</dataType>
+            <fieldText>Total Project Cost</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>The total cost of the project including all funding sources</helpText>
+            <isRequired>true</isRequired>
+            <scale>2</scale>
+        </fields>
+        <fields>
+            <name>Budget_Narrative</name>
+            <fieldText>Budget Narrative</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>Briefly describe how the funds will be used.</helpText>
+            <isRequired>false</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Review Application</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Review_Screen</name>
+        <label>Review Your Application</label>
+        <locationX>176</locationX>
+        <locationY>758</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Application</targetReference>
+        </connector>
+        <fields>
+            <name>Review_Header</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 18px; color: rgb(26, 54, 93);&quot;&gt;&lt;b&gt;Step 5: Review &amp;amp; Submit&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Please review your application before submitting.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Review_Organization</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Organization Information&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Organization: {!Organization_Name}&lt;/p&gt;&lt;p&gt;Type: {!Organization_Type}&lt;/p&gt;&lt;p&gt;EIN: {!EIN}&lt;/p&gt;&lt;p&gt;Year Founded: {!Year_Founded}&lt;/p&gt;&lt;p&gt;Annual Budget: {!Annual_Budget}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Review_Contact</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Contact Information&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Name: {!Contact_Name}&lt;/p&gt;&lt;p&gt;Email: {!Contact_Email}&lt;/p&gt;&lt;p&gt;Phone: {!Contact_Phone}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Review_Project</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Project Details&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Title: {!Project_Title}&lt;/p&gt;&lt;p&gt;Category: {!Project_Category}&lt;/p&gt;&lt;p&gt;Beneficiaries: {!Num_Beneficiaries}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Review_Budget</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Budget&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Amount Requested: {!Amount_Requested}&lt;/p&gt;&lt;p&gt;Total Project Cost: {!Total_Project_Cost}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Certification</name>
+            <dataType>Boolean</dataType>
+            <fieldText>I certify that all information provided is accurate and complete.</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>You must certify the information to submit</errorMessage>
+                <formulaExpression>{!Certification} = true</formulaExpression>
+            </validationRule>
+        </fields>
+        <nextOrFinishButtonLabel>Submit Application</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Confirmation_Screen</name>
+        <label>Application Submitted</label>
+        <locationX>176</locationX>
+        <locationY>998</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Confirmation_Message</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 24px; color: rgb(46, 132, 74);&quot;&gt;&lt;b&gt;✓ Application Submitted Successfully!&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;Your application number is: &lt;b&gt;{!NewApplication.Name}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;Thank you for applying to the Maplewood County Community Development Grant Program.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;b&gt;What happens next?&lt;/b&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Your application will be reviewed for eligibility&lt;/li&gt;&lt;li&gt;If eligible, it will be evaluated by our review committee&lt;/li&gt;&lt;li&gt;You will receive email notifications about status updates&lt;/li&gt;&lt;li&gt;Decisions are typically made within 4-6 weeks&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;You can track your application status in your dashboard.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Return to Dashboard</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <recordCreates>
+        <name>Create_Application</name>
+        <label>Create Application Record</label>
+        <locationX>176</locationX>
+        <locationY>878</locationY>
+        <connector>
+            <targetReference>Confirmation_Screen</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Amount_Requested__c</field>
+            <value>
+                <elementReference>Amount_Requested</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Annual_Budget__c</field>
+            <value>
+                <elementReference>Annual_Budget</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact_Email__c</field>
+            <value>
+                <elementReference>Contact_Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact_Name__c</field>
+            <value>
+                <elementReference>Contact_Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact_Phone__c</field>
+            <value>
+                <elementReference>Contact_Phone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact_Title__c</field>
+            <value>
+                <elementReference>Contact_Title</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EIN__c</field>
+            <value>
+                <elementReference>EIN</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Mission_Statement__c</field>
+            <value>
+                <elementReference>Mission_Statement</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Num_Beneficiaries__c</field>
+            <value>
+                <elementReference>Num_Beneficiaries</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Organization_Address__c</field>
+            <value>
+                <elementReference>Organization_Address</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Organization_Name__c</field>
+            <value>
+                <elementReference>Organization_Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Organization_Type__c</field>
+            <value>
+                <elementReference>Organization_Type</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Project_Category__c</field>
+            <value>
+                <elementReference>Project_Category</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Project_Description__c</field>
+            <value>
+                <elementReference>Project_Description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Project_End_Date__c</field>
+            <value>
+                <elementReference>Project_End_Date</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Project_Start_Date__c</field>
+            <value>
+                <elementReference>Project_Start_Date</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Project_Title__c</field>
+            <value>
+                <elementReference>Project_Title</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Submitted</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Submission_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Total_Project_Cost__c</field>
+            <value>
+                <elementReference>Total_Project_Cost</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Year_Founded__c</field>
+            <value>
+                <elementReference>Year_Founded</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Grant_Application__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <choices>
+        <name>OrgType_501c3</name>
+        <choiceText>501(c)(3)</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>501(c)(3)</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>OrgType_Other</name>
+        <choiceText>Other Nonprofit</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Other Nonprofit</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Youth</name>
+        <choiceText>Youth Programs</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Youth Programs</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Senior</name>
+        <choiceText>Senior Services</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Senior Services</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Arts</name>
+        <choiceText>Arts &amp; Culture</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Arts &amp; Culture</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Workforce</name>
+        <choiceText>Workforce Development</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Workforce Development</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Health</name>
+        <choiceText>Public Health</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Public Health</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Safety</name>
+        <choiceText>Neighborhood Safety</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Neighborhood Safety</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Category_Other</name>
+        <choiceText>Other</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Other</stringValue>
+        </value>
+    </choices>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Welcome_Screen</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>NewApplication</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Grant_Application__c</objectType>
+    </variables>
+</Flow>

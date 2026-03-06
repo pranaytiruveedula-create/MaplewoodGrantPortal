@@ -2,6 +2,7 @@ import { LightningElement, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import checkEligibility from '@salesforce/apex/GrantEligibilityService.checkEligibility';
 import saveApplication from '@salesforce/apex/GrantApplicationController.saveApplication';
+import basePath from '@salesforce/community/basePath';
 
 export default class GrantApplicationForm extends LightningElement {
     @track currentSection = 1;
@@ -140,7 +141,7 @@ export default class GrantApplicationForm extends LightningElement {
     }
 
     get isNextDisabled() {
-        return !this.isEligible;
+        return false;
     }
 
     get hasUploadedFiles() {
@@ -155,9 +156,6 @@ export default class GrantApplicationForm extends LightningElement {
         const field = event.target.dataset.field;
         let value = event.detail?.value ?? event.target.value;
         
-        // Debug log
-        console.log('[Form] Input changed - field:', field, 'value:', value);
-        
         if (event.target.type === 'number') {
             value = value ? Number(value) : null;
         }
@@ -170,6 +168,28 @@ export default class GrantApplicationForm extends LightningElement {
                 this.calculateEligibility();
             }, 400);
         }
+    }
+
+    handlePhoneChange(event) {
+        const field = event.target.dataset.field;
+        let value = event.detail?.value ?? event.target.value;
+        
+        const digits = value.replace(/\D/g, '').substring(0, 10);
+        
+        let formatted = '';
+        if (digits.length > 0) {
+            formatted = '(' + digits.substring(0, 3);
+        }
+        if (digits.length >= 3) {
+            formatted += ') ' + digits.substring(3, 6);
+        }
+        if (digits.length >= 6) {
+            formatted += '-' + digits.substring(6, 10);
+        }
+        
+        this.formData = { ...this.formData, [field]: formatted };
+        
+        event.target.value = formatted;
     }
 
     shouldRecalculateEligibility(field) {
@@ -210,7 +230,7 @@ export default class GrantApplicationForm extends LightningElement {
             }
         } catch (error) {
             if (seq === this._eligibilitySequence) {
-                console.error('[Form] Eligibility check error:', error);
+                console.error('Eligibility check error:', error);
             }
         }
     }
@@ -271,11 +291,6 @@ export default class GrantApplicationForm extends LightningElement {
             }
         }
 
-        if (!this.isEligible) {
-            isValid = false;
-            this.showToast('Error', 'Your organization must meet all eligibility criteria to proceed', 'error');
-        }
-
         return isValid;
     }
 
@@ -297,7 +312,7 @@ export default class GrantApplicationForm extends LightningElement {
         for (const field of requiredFields) {
             if (!this.formData[field]) {
                 isValid = false;
-                this.showToast('Error', 'Please fill in all required fields', 'error');
+                this.showToast('Error', 'Please fill in required field: ' + field, 'error');
                 break;
             }
         }
@@ -313,14 +328,13 @@ export default class GrantApplicationForm extends LightningElement {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        const newFiles = [];
+        const maxSize = 5 * 1024 * 1024;
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             
             if (file.size > maxSize) {
-                this.showToast('Error', `${file.name} exceeds 5MB limit`, 'error');
+                this.showToast('Error', file.name + ' exceeds 5MB limit', 'error');
                 continue;
             }
 
@@ -353,8 +367,16 @@ export default class GrantApplicationForm extends LightningElement {
     }
 
     async handleSubmit() {
-        if (!this.validateSection2()) {
-            return;
+        const requiredFields = [
+            'projectTitle', 'projectCategory', 'projectDescription',
+            'targetPopulation', 'projectStartDate', 'projectEndDate'
+        ];
+        
+        for (const field of requiredFields) {
+            if (!this.formData[field]) {
+                this.showToast('Error', 'Please fill in the required field: ' + field, 'error');
+                return;
+            }
         }
 
         this.isLoading = true;
@@ -385,7 +407,7 @@ export default class GrantApplicationForm extends LightningElement {
             if (result.success) {
                 this.savedApplicationNumber = result.applicationNumber;
                 this.showConfirmation = true;
-                this.showToast('Success', `Application ${result.applicationNumber} submitted successfully!`, 'success');
+                this.showToast('Success', 'Application ' + result.applicationNumber + ' submitted successfully!', 'success');
                 this.dispatchEvent(new CustomEvent('applicationsubmitted'));
             } else {
                 this.showToast('Error', result.errorMessage || 'Failed to submit application', 'error');
@@ -438,5 +460,10 @@ export default class GrantApplicationForm extends LightningElement {
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+    }
+
+    handleLogout() {
+        const sitePrefix = basePath.replace(/\/s$/i, '');
+        window.location.href = sitePrefix + '/secur/logout.jsp';
     }
 }

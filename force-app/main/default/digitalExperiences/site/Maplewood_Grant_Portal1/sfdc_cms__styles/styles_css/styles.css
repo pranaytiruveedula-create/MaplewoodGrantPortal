@@ -1,0 +1,267 @@
+/*
+ * Maplewood Grant Portal - Global Styles
+ */
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+html {
+    background: linear-gradient(135deg, #003068 0%, #0055a5 100%);
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+    font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Auth Pages Container - Login & Register */
+[data-page-type="login"],
+[data-page-type="self-register"],
+.cSelfRegister,
+.cLogin {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #003068 0%, #0055a5 100%);
+    position: relative;
+}
+
+/* Branded Header for Auth Pages */
+.cSelfRegister::before,
+.cLogin::before,
+[data-page-type="login"]::before,
+[data-page-type="self-register"]::before {
+    content: 'Maplewood County Community Development Grant Program';
+    display: block;
+    text-align: center;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+    padding: 40px 20px 20px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Watermark/Logo Effect */
+.cSelfRegister::after,
+.cLogin::after,
+[data-page-type="login"]::after,
+[data-page-type="self-register"]::after {
+    content: 'MAPLEWOOD';
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 80px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.05);
+    letter-spacing: 20px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Login/Register Card Container */
+.cSelfRegister .slds-card,
+.cLogin .slds-card,
+.forceCommunityLogin .slds-card,
+.forceAuthSelfRegisterStandardController .slds-card,
+.slds-form_stacked,
+.forceAuthSelfRegister,
+.loginPanel,
+.selfRegisterPanel {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    padding: 40px;
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Card Header styling */
+.cSelfRegister .slds-card::before,
+.cLogin .slds-card::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    border-radius: 12px;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+/* Form Title */
+.loginTitle,
+.selfRegisterTitle,
+.slds-text-heading_medium {
+    font-size: 24px;
+    font-weight: 700;
+    color: #003068;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* Input Fields */
+.slds-form-element__control input,
+.slds-input,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #f8fafc;
+}
+
+.slds-form-element__control input:focus,
+.slds-input:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #0070d2;
+    box-shadow: 0 0 0 4px rgba(0, 112, 210, 0.12);
+    outline: none;
+    background: #ffffff;
+}
+
+/* Form Labels */
+.slds-form-element__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Primary Button (Login/Sign Up) */
+.slds-button_brand,
+.slds-button--brand,
+button[type="submit"],
+.loginButton,
+.selfRegisterButton {
+    background: linear-gradient(135deg, #0070d2 0%, #0055a5 100%);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 24px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 112, 210, 0.25);
+}
+
+.slds-button_brand:hover,
+.slds-button--brand:hover,
+button[type="submit"]:hover,
+.loginButton:hover,
+.selfRegisterButton:hover {
+    background: linear-gradient(135deg, #005bb5 0%, #004494 100%);
+    box-shadow: 0 6px 20px rgba(0, 112, 210, 0.35);
+    transform: translateY(-2px);
+}
+
+/* Links */
+.comm-login a,
+.forceCommunityLogin a,
+.forceAuthSelfRegisterStandardController a,
+.loginHelpLink,
+.selfRegisterLink,
+a[class*="link"] {
+    color: #0070d2;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.comm-login a:hover,
+.forceCommunityLogin a:hover,
+.forceAuthSelfRegisterStandardController a:hover,
+.loginHelpLink:hover,
+.selfRegisterLink:hover,
+a[class*="link"]:hover {
+    color: #005bb5;
+    text-decoration: underline;
+}
+
+/* Help Text / Already have account link */
+.slds-align_absolute-center,
+.slds-text-align_center,
+.loginHelpText,
+.selfRegisterHelpText {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Error Messages */
+.slds-notify_alert,
+.slds-theme_error,
+.loginError,
+.selfRegisterError {
+    background-color: #ffebee;
+    border: 1px solid #f44336;
+    border-left: 4px solid #f44336;
+    border-radius: 10px;
+    color: #c62828;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* Remove extra spacing from containers */
+.slds-grid,
+.slds-col,
+.slds-size_1-of-1,
+.comm-body,
+.cSiteSetup_commFlexiPageBody {
+    min-height: auto !important;
+}
+
+/* Footer branding */
+.cSelfRegister .slds-card::after,
+.cLogin .slds-card::after {
+    content: 'Maplewood County • Community Development';
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .cSelfRegister::before,
+    .cLogin::before,
+    [data-page-type="login"]::before,
+    [data-page-type="self-register"]::before {
+        font-size: 20px;
+        padding: 30px 16px 16px;
+    }
+    
+    .cSelfRegister::after,
+    .cLogin::after {
+        font-size: 40px;
+        letter-spacing: 10px;
+    }
+    
+    .slds-form_stacked,
+    .forceAuthSelfRegister,
+    .loginPanel,
+    .selfRegisterPanel {
+        margin: 0 16px 40px;
+        padding: 28px;
+    }
+}
