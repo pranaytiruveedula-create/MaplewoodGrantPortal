@@ -162,7 +162,7 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Grant_Application__c.Reviewer_Comments__c</field>
-        <readable>true</readable>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -192,6 +192,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Status_History__c.Comments__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Status_History__c.Application__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Status_History__c.Changed_By__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <tabSettings>

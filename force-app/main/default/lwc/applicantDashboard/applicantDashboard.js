@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { refreshApex } from '@salesforce/apex';
 import getMyApplications from '@salesforce/apex/GrantApplicationController.getMyApplications';
 
 export default class ApplicantDashboard extends NavigationMixin(LightningElement) {
@@ -8,11 +9,16 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
     @track selectedApplication = null;
     @track isLoading = true;
     @track showDetailModal = false;
+    @track showApplicationForm = false;
     @track error;
 
+    _wiredApplications;
+
     @wire(getMyApplications)
-    wiredApplications({ error, data }) {
+    wiredApplications(result) {
+        this._wiredApplications = result;
         this.isLoading = false;
+        const { error, data } = result;
         if (data) {
             this.applications = data.map(app => ({
                 ...app,
@@ -38,12 +44,12 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
 
     getStatusClass(status) {
         const classes = {
-            'Submitted': 'slds-badge slds-badge_lightest',
-            'Under Review': 'slds-badge badge-review',
-            'Approved': 'slds-badge slds-theme_success',
-            'Rejected': 'slds-badge slds-theme_error'
+            'Submitted': 'status-badge badge-submitted',
+            'Under Review': 'status-badge badge-review',
+            'Approved': 'status-badge badge-approved',
+            'Rejected': 'status-badge badge-rejected'
         };
-        return classes[status] || 'slds-badge';
+        return classes[status] || 'status-badge';
     }
 
     getStatusIcon(status) {
@@ -80,12 +86,23 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
     }
 
     handleNewApplication() {
+        this.showApplicationForm = true;
+    }
+
+    handleLogout() {
         this[NavigationMixin.Navigate]({
-            type: 'comm__namedPage',
-            attributes: {
-                name: 'Apply__c'
-            }
+            type: 'comm__loginPage',
+            attributes: { actionName: 'logout' }
         });
+    }
+
+    handleApplicationSubmitted() {
+        this.showApplicationForm = false;
+        refreshApex(this._wiredApplications);
+    }
+
+    handleBackToDashboard() {
+        this.showApplicationForm = false;
     }
 
     get eligibilityRules() {
@@ -110,14 +127,5 @@ export default class ApplicantDashboard extends NavigationMixin(LightningElement
     get showAwardDetails() {
         return this.selectedApplication?.Status__c === 'Approved' && 
                this.selectedApplication?.Award_Amount__c;
-    }
-
-    get awardBreakdown() {
-        if (!this.selectedApplication?.Award_Breakdown__c) return null;
-        try {
-            return JSON.parse(this.selectedApplication.Award_Breakdown__c);
-        } catch (e) {
-            return null;
-        }
     }
 }

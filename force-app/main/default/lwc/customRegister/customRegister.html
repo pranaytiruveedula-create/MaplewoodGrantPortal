@@ -1,0 +1,172 @@
+<template>
+    <div class="register-container">
+        <div class="register-card">
+            <template if:false={registrationSuccess}>
+                <div class="register-header">
+                    <div class="logo-icon">
+                        <lightning-icon icon-name="custom:custom62" size="medium"></lightning-icon>
+                    </div>
+                    <h1 class="register-title">Create Account</h1>
+                    <p class="register-subtitle">Join Maplewood Grant Portal</p>
+                </div>
+
+                <template if:true={errorMessage}>
+                    <div class="error-banner" role="alert">
+                        <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                        <span>{errorMessage}</span>
+                    </div>
+                </template>
+
+                <div class="register-form">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input 
+                                type="text" 
+                                id="firstName"
+                                class="form-input"
+                                placeholder="First name"
+                                value={firstName}
+                                oninput={handleFirstNameChange}
+                                onkeypress={handleKeyPress}
+                            />
+                        </div>
+                        <div class="form-group half">
+                            <label for="lastName" class="form-label">
+                                Last Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="lastName"
+                                class="form-input"
+                                placeholder="Last name"
+                                value={lastName}
+                                oninput={handleLastNameChange}
+                                onkeypress={handleKeyPress}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">
+                            Email Address <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email"
+                            class="form-input"
+                            placeholder="Enter your email"
+                            value={email}
+                            oninput={handleEmailChange}
+                            onkeypress={handleKeyPress}
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">
+                            Password <span class="required">*</span>
+                        </label>
+                        <div class="password-wrapper">
+                            <input 
+                                type={passwordType}
+                                id="password"
+                                class="form-input password-input"
+                                placeholder="Create a password"
+                                value={password}
+                                oninput={handlePasswordChange}
+                                onkeypress={handleKeyPress}
+                                required
+                            />
+                            <button 
+                                type="button" 
+                                class="toggle-password-btn"
+                                onclick={togglePasswordVisibility}
+                                title={eyeTitle}
+                                aria-label={eyeTitle}
+                            >
+                                <lightning-icon icon-name={eyeIcon} size="x-small"></lightning-icon>
+                            </button>
+                        </div>
+                        <template if:true={password}>
+                            <div class={passwordStrengthClass}>
+                                <span class="strength-text">{passwordStrengthMessage}</span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">
+                            Confirm Password <span class="required">*</span>
+                        </label>
+                        <div class="password-wrapper">
+                            <input 
+                                type={confirmPasswordType}
+                                id="confirmPassword"
+                                class={confirmPasswordClass}
+                                placeholder="Confirm your password"
+                                value={confirmPassword}
+                                oninput={handleConfirmPasswordChange}
+                                onkeypress={handleKeyPress}
+                                required
+                            />
+                            <template if:true={showMatchIcon}>
+                                <span class="match-indicator">
+                                    <lightning-icon icon-name={matchIcon} size="x-small" variant={matchIconVariant}></lightning-icon>
+                                </span>
+                            </template>
+                            <button 
+                                type="button" 
+                                class="toggle-password-btn with-indicator"
+                                onclick={toggleConfirmPasswordVisibility}
+                                title={confirmEyeTitle}
+                                aria-label={confirmEyeTitle}
+                            >
+                                <lightning-icon icon-name={confirmEyeIcon} size="x-small"></lightning-icon>
+                            </button>
+                        </div>
+                        <template if:true={passwordMismatchError}>
+                            <div class="field-error">{passwordMismatchError}</div>
+                        </template>
+                    </div>
+
+                    <button 
+                        class="register-button"
+                        onclick={handleRegister}
+                        disabled={isRegisterDisabled}
+                    >
+                        <template if:true={isLoading}>
+                            <lightning-spinner alternative-text="Creating account" size="small"></lightning-spinner>
+                            <span>Creating Account...</span>
+                        </template>
+                        <template if:false={isLoading}>
+                            <span>Create Account</span>
+                        </template>
+                    </button>
+                </div>
+
+                <div class="login-section">
+                    <span class="login-text">Already have an account?</span>
+                    <a href={loginLink} class="login-link">Sign In</a>
+                </div>
+            </template>
+
+            <template if:true={registrationSuccess}>
+                <div class="success-container">
+                    <div class="success-icon">
+                        <lightning-icon icon-name="utility:success" size="large" variant="success"></lightning-icon>
+                    </div>
+                    <h2 class="success-title">Registration Successful!</h2>
+                    <p class="success-message">
+                        Your account has been created. Please check your email for verification instructions, 
+                        then you can sign in to the portal.
+                    </p>
+                    <button class="login-button" onclick={handleGoToLogin}>
+                        Go to Sign In
+                    </button>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

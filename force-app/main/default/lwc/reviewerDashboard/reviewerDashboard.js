@@ -3,6 +3,7 @@ import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getApplicationsForReview from '@salesforce/apex/GrantReviewerController.getApplicationsForReview';
 import getApplicationStats from '@salesforce/apex/GrantReviewerController.getApplicationStats';
+import getApplicationDocuments from '@salesforce/apex/GrantReviewerController.getApplicationDocuments';
 import calculateAward from '@salesforce/apex/GrantAwardService.calculateAward';
 import approveApplication from '@salesforce/apex/GrantAwardService.approveApplication';
 import rejectApplication from '@salesforce/apex/GrantAwardService.rejectApplication';
@@ -37,6 +38,8 @@ export default class ReviewerDashboard extends LightningElement {
     @track approveComments = '';
     @track filterStatus = '';
     @track filterEligibility = '';
+    @track documents = [];
+    @track isLoadingDocuments = false;
     
     columns = COLUMNS;
     wiredApplicationsResult;
@@ -125,12 +128,16 @@ export default class ReviewerDashboard extends LightningElement {
         this.selectedApplication = application;
         this.showReviewModal = true;
         this.awardPreview = null;
-        
+        this.documents = [];
+        this.isLoadingDocuments = true;
+
         try {
             if (application.Status__c === 'Submitted') {
                 await setUnderReview({ applicationId: application.Id });
                 await refreshApex(this.wiredApplicationsResult);
             }
+            
+            this.loadDocuments(application.Id);
             
             const result = await calculateAward({ applicationId: application.Id });
             if (result.success) {
@@ -233,6 +240,24 @@ export default class ReviewerDashboard extends LightningElement {
         } finally {
             this.isLoading = false;
         }
+    }
+    
+    async loadDocuments(applicationId) {
+        try {
+            const docs = await getApplicationDocuments({ applicationId });
+            this.documents = docs.map(doc => ({
+                ...doc,
+                downloadUrl: `/sfc/servlet.shepherd/version/download/${doc.versionId}`
+            }));
+        } catch (error) {
+            console.error('Error loading documents:', error);
+        } finally {
+            this.isLoadingDocuments = false;
+        }
+    }
+    
+    get hasDocuments() {
+        return this.documents && this.documents.length > 0;
     }
     
     showToast(title, message, variant) {

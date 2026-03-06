@@ -1,0 +1,139 @@
+<template>
+    <div class="landing-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge">Now Accepting Applications</div>
+                <h1 class="hero-title">Maplewood County<br/>Community Development Grants</h1>
+                <p class="hero-subtitle">
+                    Supporting local nonprofits with grants up to $50,000 for community improvement projects
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick={handleSignIn}>
+                        <lightning-icon icon-name="utility:login" size="x-small"></lightning-icon>
+                        Sign In
+                    </button>
+                    <button class="btn btn-secondary" onclick={handleRegister}>
+                        <lightning-icon icon-name="utility:new" size="x-small"></lightning-icon>
+                        Register Now
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="visual-icon">
+                        <lightning-icon icon-name="custom:custom62" size="large"></lightning-icon>
+                    </div>
+                    <div class="visual-stats">
+                        <div class="stat">
+                            <span class="stat-value">$2M</span>
+                            <span class="stat-label">Annual Funding</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">$50K</span>
+                            <span class="stat-label">Max Per Grant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Program Info Section -->
+        <section class="info-section">
+            <h2 class="section-title">About the Grant Program</h2>
+            <p class="section-description">
+                The Maplewood County Community Development Grant Program distributes $2 million annually 
+                to local nonprofits for community improvement projects. We support initiatives in youth 
+                programs, senior services, public health, neighborhood safety, arts & culture, and workforce development.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:money" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Up to $50,000</h3>
+                    <p>Grants available for qualifying nonprofit organizations</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:check" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Real-Time Eligibility</h3>
+                    <p>Know if you qualify before completing your application</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:clock" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Track Your Status</h3>
+                    <p>Monitor your application progress through our online portal</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <lightning-icon icon-name="utility:groups" size="medium"></lightning-icon>
+                    </div>
+                    <h3>Community Impact</h3>
+                    <p>Fund projects that serve at least 50 beneficiaries</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Eligibility Section -->
+        <section class="eligibility-section">
+            <h2 class="section-title">Eligibility Requirements</h2>
+            <div class="eligibility-grid">
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>501(c)(3), 501(c)(4), or Community-Based Organization</span>
+                </div>
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>Operating for at least 2 years</span>
+                </div>
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>Annual budget under $2 million</span>
+                </div>
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>Request up to 50% of total project cost</span>
+                </div>
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>Maximum request of $50,000</span>
+                </div>
+                <div class="eligibility-item">
+                    <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                    <span>Project serves at least 50 beneficiaries</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Apply?</h2>
+            <p>Create an account to start your grant application today.</p>
+            <div class="cta-actions">
+                <button class="btn btn-primary btn-large" onclick={handleRegister}>
+                    Get Started
+                    <lightning-icon icon-name="utility:forward" size="x-small"></lightning-icon>
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <strong>Maplewood County</strong>
+                    <span>Office of Community Development</span>
+                </div>
+                <div class="footer-links">
+                    <button class="footer-link-btn" onclick={handleSignIn}>Sign In</button>
+                    <button class="footer-link-btn" onclick={handleRegister}>Register</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+</template>

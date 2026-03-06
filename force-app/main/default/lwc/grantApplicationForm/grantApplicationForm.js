@@ -2,6 +2,7 @@ import { LightningElement, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import checkEligibility from '@salesforce/apex/GrantEligibilityService.checkEligibility';
 import saveApplication from '@salesforce/apex/GrantApplicationController.saveApplication';
+import basePath from '@salesforce/community/basePath';
 
 export default class GrantApplicationForm extends LightningElement {
     @track currentSection = 1;
@@ -10,6 +11,9 @@ export default class GrantApplicationForm extends LightningElement {
     @track uploadedFiles = [];
     @track showConfirmation = false;
     @track savedApplicationNumber = '';
+
+    _eligibilityDebounceTimer = null;
+    _eligibilitySequence = 0;
     
     @track formData = {
         organizationName: '',
@@ -34,6 +38,9 @@ export default class GrantApplicationForm extends LightningElement {
         numBeneficiaries: null
     };
 
+    @track startDateError = '';
+    @track endDateError = '';
+
     get organizationTypeOptions() {
         return [
             { label: '-- Select --', value: '' },
@@ -51,13 +58,10 @@ export default class GrantApplicationForm extends LightningElement {
             { label: '-- Select --', value: '' },
             { label: 'Youth Programs', value: 'Youth Programs' },
             { label: 'Senior Services', value: 'Senior Services' },
-            { label: 'Food Security', value: 'Food Security' },
-            { label: 'Housing Assistance', value: 'Housing Assistance' },
-            { label: 'Job Training', value: 'Job Training' },
-            { label: 'Health Services', value: 'Health Services' },
-            { label: 'Education', value: 'Education' },
-            { label: 'Environmental', value: 'Environmental' },
+            { label: 'Public Health', value: 'Public Health' },
+            { label: 'Neighborhood Safety', value: 'Neighborhood Safety' },
             { label: 'Arts & Culture', value: 'Arts & Culture' },
+            { label: 'Workforce Development', value: 'Workforce Development' },
             { label: 'Other', value: 'Other' }
         ];
     }
@@ -70,7 +74,32 @@ export default class GrantApplicationForm extends LightningElement {
         return this.currentSection === 2;
     }
 
-    get showEligibilityPanel() {
+    get isSection3() {
+        return this.currentSection === 3;
+    }
+
+    get step1Class() {
+        if (this.currentSection === 1) return 'step active';
+        return 'step completed';
+    }
+
+    get step2Class() {
+        if (this.currentSection === 2) return 'step active';
+        if (this.currentSection > 2) return 'step completed';
+        return 'step';
+    }
+
+    get step3Class() {
+        if (this.currentSection === 3) return 'step active';
+        return 'step';
+    }
+
+    get eligibilitySummaryBadgeClass() {
+        if (!this.eligibilityResult) return 'badge badge-pending';
+        return this.isEligible ? 'badge badge-eligible' : 'badge badge-not-eligible';
+    }
+
+    get hasEligibilityResult() {
         return this.eligibilityResult !== null;
     }
 
@@ -78,32 +107,44 @@ export default class GrantApplicationForm extends LightningElement {
         return this.eligibilityResult?.isEligible === true;
     }
 
-    get eligibilityStatusClass() {
-        return this.isEligible 
-            ? 'slds-box slds-theme_success slds-m-bottom_medium'
-            : 'slds-box slds-theme_error slds-m-bottom_medium';
+    get eligibilityStatusColorClass() {
+        if (!this.eligibilityResult) return 'pending';
+        return this.isEligible ? 'eligible' : 'not-eligible';
     }
 
-    get eligibilityStatusText() {
-        if (!this.eligibilityResult) return '';
-        return this.isEligible 
-            ? `Eligible - ${this.eligibilityResult.totalPassed}/6 criteria met`
-            : `Not Eligible - ${this.eligibilityResult.totalPassed}/6 criteria met`;
+    get eligibilityStatusIcon() {
+        return this.isEligible ? 'utility:success' : 'utility:error';
     }
 
-    get formattedRules() {
+    get eligibilityStatusLabel() {
+        if (!this.eligibilityResult) return 'Not Yet Evaluated';
+        return this.isEligible ? 'Eligible' : 'Not Eligible';
+    }
+
+    get allRules() {
+        const defaultRules = [
+            { ruleId: 'R1', ruleName: 'Nonprofit Status', message: 'Select an organization type', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' },
+            { ruleId: 'R2', ruleName: 'Operating History', message: 'Enter year founded', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' },
+            { ruleId: 'R3', ruleName: 'Budget Cap', message: 'Enter annual budget', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' },
+            { ruleId: 'R4', ruleName: 'Funding Ratio', message: 'Enter amount requested and total cost', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' },
+            { ruleId: 'R5', ruleName: 'Maximum Request', message: 'Enter amount requested', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' },
+            { ruleId: 'R6', ruleName: 'Minimum Impact', message: 'Enter number of beneficiaries', statusClass: 'pending', iconName: 'utility:dash', altText: 'Pending' }
+        ];
+
         if (!this.eligibilityResult || !this.eligibilityResult.rules) {
-            return [];
+            return defaultRules;
         }
+
         return this.eligibilityResult.rules.map(rule => ({
             ...rule,
+            statusClass: rule.passed ? 'passed' : 'failed',
             iconName: rule.passed ? 'utility:success' : 'utility:error',
             altText: rule.passed ? 'Passed' : 'Failed'
         }));
     }
 
     get isNextDisabled() {
-        return !this.isEligible;
+        return false;
     }
 
     get hasUploadedFiles() {
@@ -112,6 +153,27 @@ export default class GrantApplicationForm extends LightningElement {
 
     get acceptedFormats() {
         return ['.pdf', '.doc', '.docx', '.xls', '.xlsx'];
+    }
+
+    get hasStartDateError() {
+        return this.startDateError !== '';
+    }
+
+    get hasEndDateError() {
+        return this.endDateError !== '';
+    }
+
+    get minStartDate() {
+        const today = new Date();
+        today.setDate(today.getDate() + 30);
+        return today.toISOString().split('T')[0];
+    }
+
+    get maxEndDate() {
+        if (!this.formData.projectStartDate) return null;
+        const startDate = new Date(this.formData.projectStartDate);
+        startDate.setMonth(startDate.getMonth() + 24);
+        return startDate.toISOString().split('T')[0];
     }
 
     handleInputChange(event) {
@@ -124,9 +186,84 @@ export default class GrantApplicationForm extends LightningElement {
         
         this.formData = { ...this.formData, [field]: value };
         
-        if (this.shouldRecalculateEligibility(field)) {
-            this.calculateEligibility();
+        if (field === 'projectStartDate' || field === 'projectEndDate') {
+            this.validateDates();
         }
+        
+        if (this.shouldRecalculateEligibility(field)) {
+            clearTimeout(this._eligibilityDebounceTimer);
+            this._eligibilityDebounceTimer = setTimeout(() => {
+                this.calculateEligibility();
+            }, 400);
+        }
+    }
+
+    validateDates() {
+        let startDateError = '';
+        let endDateError = '';
+        
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const todayParts = todayStr.split('-');
+        const todayDate = new Date(parseInt(todayParts[0]), parseInt(todayParts[1]) - 1, parseInt(todayParts[2]));
+        
+        const minStartDate = new Date(todayDate);
+        minStartDate.setDate(minStartDate.getDate() + 30);
+
+        if (this.formData.projectStartDate) {
+            const startParts = this.formData.projectStartDate.split('-');
+            const startDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
+            
+            if (startDate < minStartDate) {
+                startDateError = 'Project Start Date must be at least 30 days in the future.';
+            }
+        }
+
+        if (this.formData.projectEndDate) {
+            const endParts = this.formData.projectEndDate.split('-');
+            const endDate = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]));
+            
+            if (this.formData.projectStartDate) {
+                const startParts = this.formData.projectStartDate.split('-');
+                const startDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
+                
+                if (endDate <= startDate) {
+                    endDateError = 'Project End Date must be after the Start Date.';
+                } else {
+                    const maxEndDate = new Date(startDate);
+                    maxEndDate.setMonth(maxEndDate.getMonth() + 24);
+                    if (endDate > maxEndDate) {
+                        endDateError = 'Project End Date must be within 24 months of the Start Date.';
+                    }
+                }
+            }
+        }
+
+        this.startDateError = startDateError;
+        this.endDateError = endDateError;
+        return startDateError === '' && endDateError === '';
+    }
+
+    handlePhoneChange(event) {
+        const field = event.target.dataset.field;
+        let value = event.detail?.value ?? event.target.value;
+        
+        const digits = value.replace(/\D/g, '').substring(0, 10);
+        
+        let formatted = '';
+        if (digits.length > 0) {
+            formatted = '(' + digits.substring(0, 3);
+        }
+        if (digits.length >= 3) {
+            formatted += ') ' + digits.substring(3, 6);
+        }
+        if (digits.length >= 6) {
+            formatted += '-' + digits.substring(6, 10);
+        }
+        
+        this.formData = { ...this.formData, [field]: formatted };
+        
+        event.target.value = formatted;
     }
 
     shouldRecalculateEligibility(field) {
@@ -151,8 +288,10 @@ export default class GrantApplicationForm extends LightningElement {
             return;
         }
 
+        const seq = ++this._eligibilitySequence;
+
         try {
-            this.eligibilityResult = await checkEligibility({
+            const result = await checkEligibility({
                 organizationType: organizationType || null,
                 yearFounded: yearFounded ? parseInt(yearFounded, 10) : null,
                 annualBudget: annualBudget ? parseFloat(annualBudget) : null,
@@ -160,8 +299,13 @@ export default class GrantApplicationForm extends LightningElement {
                 totalProjectCost: totalProjectCost ? parseFloat(totalProjectCost) : null,
                 numBeneficiaries: numBeneficiaries ? parseInt(numBeneficiaries, 10) : null
             });
+            if (seq === this._eligibilitySequence) {
+                this.eligibilityResult = result;
+            }
         } catch (error) {
-            console.error('Eligibility check error:', error);
+            if (seq === this._eligibilitySequence) {
+                console.error('Eligibility check error:', error);
+            }
         }
     }
 
@@ -173,7 +317,26 @@ export default class GrantApplicationForm extends LightningElement {
     }
 
     handlePreviousSection() {
+        if (this.currentSection > 1) {
+            this.currentSection = this.currentSection - 1;
+        }
+        window.scrollTo(0, 0);
+    }
+
+    handleNextToReview() {
+        if (this.validateSection2()) {
+            this.currentSection = 3;
+            window.scrollTo(0, 0);
+        }
+    }
+
+    handleEditSection1() {
         this.currentSection = 1;
+        window.scrollTo(0, 0);
+    }
+
+    handleEditSection2() {
+        this.currentSection = 2;
         window.scrollTo(0, 0);
     }
 
@@ -202,11 +365,6 @@ export default class GrantApplicationForm extends LightningElement {
             }
         }
 
-        if (!this.isEligible) {
-            isValid = false;
-            this.showToast('Error', 'Your organization must meet all eligibility criteria to proceed', 'error');
-        }
-
         return isValid;
     }
 
@@ -228,37 +386,100 @@ export default class GrantApplicationForm extends LightningElement {
         for (const field of requiredFields) {
             if (!this.formData[field]) {
                 isValid = false;
-                this.showToast('Error', 'Please fill in all required fields', 'error');
+                this.showToast('Error', 'Please fill in required field: ' + field, 'error');
                 break;
+            }
+        }
+
+        if (!this.validateDates()) {
+            isValid = false;
+            if (this.startDateError) {
+                this.showToast('Error', this.startDateError, 'error');
+            } else if (this.endDateError) {
+                this.showToast('Error', this.endDateError, 'error');
             }
         }
 
         return isValid;
     }
 
-    handleUploadFinished(event) {
-        const files = event.detail.files;
-        this.uploadedFiles = [...this.uploadedFiles, ...files];
-        this.showToast('Success', `${files.length} file(s) uploaded`, 'success');
+    triggerFileInput() {
+        this.template.querySelector('input[type="file"]').click();
+    }
+
+    handleFileSelect(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        const maxSize = 5 * 1024 * 1024;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            if (file.size > maxSize) {
+                this.showToast('Error', file.name + ' exceeds 5MB limit', 'error');
+                continue;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                this.uploadedFiles = [...this.uploadedFiles, {
+                    name: file.name,
+                    size: file.size,
+                    sizeLabel: this.formatFileSize(file.size),
+                    contentType: file.type,
+                    base64Data: base64
+                }];
+            };
+            reader.readAsDataURL(file);
+        }
+
+        event.target.value = '';
+    }
+
+    formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
     handleRemoveFile(event) {
-        const index = event.target.dataset.index;
-        this.uploadedFiles = this.uploadedFiles.filter((_, i) => i !== parseInt(index, 10));
+        const index = parseInt(event.target.dataset.index, 10);
+        this.uploadedFiles = this.uploadedFiles.filter((_, i) => i !== index);
     }
 
     async handleSubmit() {
-        if (!this.validateSection2()) {
+        const requiredFields = [
+            'projectTitle', 'projectCategory', 'projectDescription',
+            'targetPopulation', 'projectStartDate', 'projectEndDate'
+        ];
+        
+        for (const field of requiredFields) {
+            if (!this.formData[field]) {
+                this.showToast('Error', 'Please fill in the required field: ' + field, 'error');
+                return;
+            }
+        }
+
+        if (!this.uploadedFiles || this.uploadedFiles.length === 0) {
+            this.showToast('Error', 'Please upload at least one supporting document (PDF, JPG, or PNG).', 'error');
             return;
         }
 
         this.isLoading = true;
 
         try {
+            const filesToUpload = this.uploadedFiles.map(f => ({
+                fileName: f.name,
+                base64Data: f.base64Data,
+                contentType: f.contentType
+            }));
+
             const applicationData = {
                 ...this.formData,
                 eligibilityJSON: JSON.stringify(this.eligibilityResult),
-                files: null
+                files: filesToUpload.length > 0 ? filesToUpload : null
             };
 
             const savePromise = saveApplication({
@@ -274,7 +495,8 @@ export default class GrantApplicationForm extends LightningElement {
             if (result.success) {
                 this.savedApplicationNumber = result.applicationNumber;
                 this.showConfirmation = true;
-                this.showToast('Success', `Application ${result.applicationNumber} submitted successfully!`, 'success');
+                this.showToast('Success', 'Application ' + result.applicationNumber + ' submitted successfully!', 'success');
+                this.dispatchEvent(new CustomEvent('applicationsubmitted'));
             } else {
                 this.showToast('Error', result.errorMessage || 'Failed to submit application', 'error');
             }
@@ -288,6 +510,10 @@ export default class GrantApplicationForm extends LightningElement {
 
     handleStartNewApplication() {
         this.resetForm();
+    }
+
+    handleBackToDashboard() {
+        this.dispatchEvent(new CustomEvent('backtodashboard'));
     }
 
     resetForm() {
@@ -322,5 +548,10 @@ export default class GrantApplicationForm extends LightningElement {
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+    }
+
+    handleLogout() {
+        const sitePrefix = basePath.replace(/\/s$/i, '');
+        window.location.href = sitePrefix + '/secur/logout.jsp';
     }
 }

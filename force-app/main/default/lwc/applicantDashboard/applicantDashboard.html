@@ -1,111 +1,139 @@
 <template>
-    <lightning-card title="My Grant Applications" icon-name="standard:opportunity">
-        <div slot="actions">
-            <lightning-button 
-                label="New Application" 
-                variant="brand" 
-                icon-name="utility:add"
-                onclick={handleNewApplication}>
-            </lightning-button>
+    <template if:true={showApplicationForm}>
+        <c-grant-application-form
+            onapplicationsubmitted={handleApplicationSubmitted}
+            onbacktodashboard={handleBackToDashboard}>
+        </c-grant-application-form>
+    </template>
+
+    <template if:false={showApplicationForm}>
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <div class="logo-icon">
+                    <lightning-icon icon-name="custom:custom62" size="medium"></lightning-icon>
+                </div>
+                <div class="brand-text">
+                    <h1 class="site-title">Maplewood County</h1>
+                    <p class="site-subtitle">Community Development Grant Program</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <button class="logout-button" onclick={handleLogout}>
+                    <lightning-icon icon-name="utility:logout" size="x-small"></lightning-icon>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <h1 class="dashboard-title">My Grant Applications</h1>
+                <p class="dashboard-subtitle">Track and manage your submitted applications</p>
+            </div>
+            <div class="header-actions">
+                <button class="apply-button" onclick={handleNewApplication}>
+                    <lightning-icon icon-name="utility:add" size="x-small"></lightning-icon>
+                    <span>New Application</span>
+                </button>
+            </div>
         </div>
 
-        <div class="slds-p-horizontal_medium">
+        <div class="dashboard-content">
             <template if:true={isLoading}>
-                <div class="slds-p-around_large slds-text-align_center">
-                    <lightning-spinner alternative-text="Loading applications"></lightning-spinner>
+                <div class="loading-container">
+                    <lightning-spinner alternative-text="Loading applications" size="medium"></lightning-spinner>
                 </div>
             </template>
 
             <template if:false={isLoading}>
                 <template if:true={error}>
-                    <div class="slds-illustration slds-illustration_small slds-p-vertical_large slds-text-align_center">
-                        <p class="slds-text-color_error">{error}</p>
+                    <div class="error-container">
+                        <lightning-icon icon-name="utility:error" size="large"></lightning-icon>
+                        <p class="error-message">{error}</p>
                     </div>
                 </template>
 
                 <template if:false={error}>
                     <template if:true={hasApplications}>
-                        <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="applications-grid">
                             <template for:each={applications} for:item="app">
-                                <div key={app.Id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-p-bottom_medium">
-                                    <article class="slds-card app-card">
-                                        <div class="slds-card__header slds-grid">
-                                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
-                                                <div class="slds-media__figure">
-                                                    <lightning-icon icon-name="standard:document" size="small"></lightning-icon>
-                                                </div>
-                                                <div class="slds-media__body">
-                                                    <h2 class="slds-card__header-title">
-                                                        <span class="slds-text-heading_small slds-truncate">{app.Name}</span>
-                                                    </h2>
-                                                </div>
-                                            </header>
-                                            <div class="slds-no-flex">
-                                                <span class={app.statusClass}>{app.Status__c}</span>
-                                            </div>
+                                <div key={app.Id} class="application-card">
+                                    <div class="card-header">
+                                        <div class="card-title-row">
+                                            <lightning-icon icon-name="standard:document" size="small"></lightning-icon>
+                                            <h2 class="card-title">{app.Name}</h2>
                                         </div>
-                                        <div class="slds-card__body slds-card__body_inner">
-                                            <dl class="slds-dl_horizontal slds-text-body_small">
-                                                <dt class="slds-dl_horizontal__label">Project:</dt>
-                                                <dd class="slds-dl_horizontal__detail slds-truncate">{app.Project_Title__c}</dd>
-                                                
-                                                <dt class="slds-dl_horizontal__label">Submitted:</dt>
-                                                <dd class="slds-dl_horizontal__detail">{app.formattedDate}</dd>
-                                                
-                                                <dt class="slds-dl_horizontal__label">Requested:</dt>
-                                                <dd class="slds-dl_horizontal__detail">
+                                        <span class={app.statusClass}>{app.Status__c}</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-row">
+                                            <span class="info-label">Project</span>
+                                            <span class="info-value">{app.Project_Title__c}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Submitted</span>
+                                            <span class="info-value">{app.formattedDate}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Requested</span>
+                                            <span class="info-value">
+                                                <lightning-formatted-number 
+                                                    value={app.Amount_Requested__c} 
+                                                    format-style="currency" 
+                                                    currency-code="USD">
+                                                </lightning-formatted-number>
+                                            </span>
+                                        </div>
+                                        <template if:true={app.hasAward}>
+                                            <div class="info-row award-row">
+                                                <span class="info-label">Award</span>
+                                                <span class="info-value award-value">
                                                     <lightning-formatted-number 
-                                                        value={app.Amount_Requested__c} 
+                                                        value={app.Award_Amount__c} 
                                                         format-style="currency" 
                                                         currency-code="USD">
                                                     </lightning-formatted-number>
-                                                </dd>
-                                                
-                                                <template if:true={app.hasAward}>
-                                                    <dt class="slds-dl_horizontal__label award-label">Award:</dt>
-                                                    <dd class="slds-dl_horizontal__detail award-amount">
-                                                        <lightning-formatted-number 
-                                                            value={app.Award_Amount__c} 
-                                                            format-style="currency" 
-                                                            currency-code="USD">
-                                                        </lightning-formatted-number>
-                                                    </dd>
-                                                </template>
-                                            </dl>
-                                        </div>
-                                        <footer class="slds-card__footer">
-                                            <lightning-button 
-                                                label="View Details" 
-                                                variant="base"
-                                                data-id={app.Id}
-                                                onclick={handleViewDetails}>
-                                            </lightning-button>
-                                        </footer>
-                                    </article>
+                                                </span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="card-footer">
+                                        <lightning-button 
+                                            label="View Details" 
+                                            variant="neutral"
+                                            data-id={app.Id}
+                                            onclick={handleViewDetails}>
+                                        </lightning-button>
+                                    </div>
                                 </div>
                             </template>
                         </div>
                     </template>
 
                     <template if:false={hasApplications}>
-                        <div class="slds-illustration slds-illustration_small slds-p-vertical_x-large slds-text-align_center">
-                            <lightning-icon icon-name="utility:document" size="large" class="slds-m-bottom_medium"></lightning-icon>
-                            <h3 class="slds-text-heading_medium slds-m-bottom_small">No Applications Yet</h3>
-                            <p class="slds-text-body_regular slds-m-bottom_medium">{noApplicationsMessage}</p>
-                            <lightning-button 
-                                label="Start New Application" 
-                                variant="brand"
-                                onclick={handleNewApplication}>
-                            </lightning-button>
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <lightning-icon icon-name="utility:document" size="large"></lightning-icon>
+                            </div>
+                            <h3 class="empty-title">No Applications Yet</h3>
+                            <p class="empty-message">Start your first grant application to support your community project.</p>
+                            <button class="empty-cta" onclick={handleNewApplication}>
+                                <lightning-icon icon-name="utility:add" size="x-small"></lightning-icon>
+                                Apply Now
+                            </button>
                         </div>
                     </template>
                 </template>
             </template>
         </div>
-    </lightning-card>
+    </div>
 
     <template if:true={showDetailModal}>
-        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
                     <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeDetailModal}>
@@ -113,26 +141,32 @@
                     </button>
                     <h2 class="slds-modal__title">Application Details: {selectedApplication.Name}</h2>
                 </header>
-                <div class="slds-modal__content slds-p-around_medium">
+                <div class="slds-modal__content">
                     <template if:true={showReviewerComments}>
                         <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
-                            <lightning-icon icon-name="utility:error" size="small" class="slds-m-right_small"></lightning-icon>
-                            <h2>Application Rejected</h2>
-                            <p class="slds-m-top_x-small">{selectedApplication.Reviewer_Comments__c}</p>
+                            <h2>
+                                <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
+                                Application Rejected
+                            </h2>
+                            <p>{selectedApplication.Reviewer_Comments__c}</p>
                         </div>
                     </template>
 
                     <template if:true={showAwardDetails}>
                         <div class="slds-notify slds-notify_alert slds-alert_success slds-m-bottom_medium" role="alert">
-                            <lightning-icon icon-name="utility:success" size="small" class="slds-m-right_small"></lightning-icon>
-                            <h2>Congratulations! Your application has been approved.</h2>
-                            <p class="slds-m-top_x-small slds-text-heading_medium">
-                                Award Amount: 
-                                <lightning-formatted-number 
-                                    value={selectedApplication.Award_Amount__c} 
-                                    format-style="currency" 
-                                    currency-code="USD">
-                                </lightning-formatted-number>
+                            <h2>
+                                <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                                Application Approved
+                            </h2>
+                            <p>
+                                Congratulations! Your award amount is: 
+                                <strong>
+                                    <lightning-formatted-number 
+                                        value={selectedApplication.Award_Amount__c} 
+                                        format-style="currency" 
+                                        currency-code="USD">
+                                    </lightning-formatted-number>
+                                </strong>
                             </p>
                         </div>
                     </template>
@@ -218,38 +252,6 @@
                             </div>
                         </template>
 
-                        <template if:true={awardBreakdown}>
-                            <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
-                                <h3 class="slds-text-heading_small slds-m-bottom_small">Award Calculation Details</h3>
-                                <div class="slds-box award-box">
-                                    <table class="slds-table slds-table_bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Factor</th>
-                                                <th>Score</th>
-                                                <th>Details</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <template for:each={awardBreakdown.factors} for:item="factor">
-                                                <tr key={factor.factorName}>
-                                                    <td>{factor.factorName}</td>
-                                                    <td>{factor.score} / {factor.maxScore}</td>
-                                                    <td>{factor.detail}</td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td><strong>Total</strong></td>
-                                                <td><strong>{awardBreakdown.totalScore} / {awardBreakdown.maxScore}</strong></td>
-                                                <td><strong>{awardBreakdown.awardPercentage}%</strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </template>
                     </div>
                 </div>
                 <footer class="slds-modal__footer">
@@ -258,5 +260,6 @@
             </div>
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
     </template>
 </template>

@@ -1,0 +1,94 @@
+{
+  "type" : "sfdc_cms__themeLayout",
+  "title" : "Scoped Header and Footer",
+  "contentBody" : {
+    "component" : {
+      "attributes" : {
+        "hideThemeFooter" : false,
+        "showThemeFooterAtBottom" : false,
+        "stickyThemeHeader" : true
+      },
+      "children" : [ {
+        "children" : [ {
+          "attributes" : {
+            "backgroundImageConfig" : "",
+            "backgroundImageOverlay" : "rgba(0,0,0,0)",
+            "componentSpacerSize" : "",
+            "layoutDirectionDesktop" : "row",
+            "layoutDirectionMobile" : "column",
+            "layoutDirectionTablet" : "column",
+            "maxContentWidth" : "",
+            "sectionColumnGutterWidth" : "",
+            "sectionConfig" : "{\"UUID\":\"06d2c4e9-4250-44a7-b139-cdf8763731d2\",\"columns\":[{\"UUID\":\"e1e4a0ae-2ac4-4f34-aecf-f8e9c11db9f3\",\"columnName\":\"Theme Header\",\"columnKey\":\"headerSection\",\"columnWidth\":\"6\",\"seedComponents\":null},{\"UUID\":\"26621d15-0ae9-41b1-9258-f77c341967df\",\"columnName\":\"Column 2\",\"columnKey\":\"c9314\",\"columnWidth\":\"6\",\"seedComponents\":[]}]}",
+            "sectionMinHeight" : "",
+            "sectionVerticalAlign" : "flex-start"
+          },
+          "children" : [ {
+            "id" : "e1e4a0ae-2ac4-4f34-aecf-f8e9c11db9f3",
+            "name" : "headerSection",
+            "title" : "Column 1",
+            "type" : "region"
+          }, {
+            "children" : [ {
+              "attributes" : {
+                "alignment" : "right",
+                "size" : "small",
+                "stretch" : "standard",
+                "text" : "Logout",
+                "type" : "secondary",
+                "url" : "{\"linkInfo\":{\"pageReference\":{\"type\":\"standard__webPage\",\"attributes\":{\"url\":\"https://orgfarm-f1ef498975-dev-ed.develop.my.site.com/grants/secur/logout.jsp?retURL=/grants/s/login\"}}}}"
+              },
+              "definition" : "dxp_base:button",
+              "id" : "c03448bb-6e62-4ff8-82f4-745a0aed4382",
+              "type" : "component"
+            } ],
+            "id" : "26621d15-0ae9-41b1-9258-f77c341967df",
+            "name" : "c9314",
+            "title" : "Column 2",
+            "type" : "region"
+          } ],
+          "definition" : "community_layout:section",
+          "id" : "06d2c4e9-4250-44a7-b139-cdf8763731d2",
+          "type" : "component"
+        } ],
+        "id" : "dfc82eb3-b95b-4d30-b530-31ea7a0ab549",
+        "name" : "header",
+        "title" : "Theme Header",
+        "type" : "region"
+      }, {
+        "children" : [ {
+          "attributes" : {
+            "backgroundImageConfig" : "",
+            "backgroundImageOverlay" : "rgba(0,0,0,0)",
+            "componentSpacerSize" : "",
+            "layoutDirectionDesktop" : "row",
+            "layoutDirectionMobile" : "column",
+            "layoutDirectionTablet" : "column",
+            "maxContentWidth" : "",
+            "sectionColumnGutterWidth" : "",
+            "sectionConfig" : "{\"UUID\":\"15d3a48e-466f-45b0-b92d-cfb122720655\",\"columns\":[{\"UUID\":\"1de687d3-84b9-4047-9e9f-8274b877f6b0\",\"columnName\":\"Column 1\",\"columnKey\":\"footerSection\",\"columnWidth\":\"12\",\"seedComponents\":null}]}",
+            "sectionMinHeight" : "",
+            "sectionVerticalAlign" : "flex-start"
+          },
+          "children" : [ {
+            "id" : "1de687d3-84b9-4047-9e9f-8274b877f6b0",
+            "name" : "footerSection",
+            "title" : "Theme Footer",
+            "type" : "region"
+          } ],
+          "definition" : "community_layout:section",
+          "id" : "15d3a48e-466f-45b0-b92d-cfb122720655",
+          "type" : "component"
+        } ],
+        "id" : "9b69ddf3-a20a-4aea-8cdb-0713f680849b",
+        "name" : "footer",
+        "title" : "Theme Footer",
+        "type" : "region"
+      } ],
+      "definition" : "community_byo:scopedHeaderAndFooter",
+      "id" : "5af7a561-fba6-4f2d-959a-f05c890b8c8e",
+      "type" : "component"
+    }
+  },
+  "urlName" : "scoped-header-and-footer"
+}
