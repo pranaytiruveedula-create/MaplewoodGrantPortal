@@ -354,9 +354,13 @@
                                     value={formData.projectStartDate}
                                     data-field="projectStartDate"
                                     onchange={handleInputChange}
+                                    min={minStartDate}
                                     required
                                     class="custom-input">
                                 </lightning-input>
+                                <template lwc:if={hasStartDateError}>
+                                    <div class="date-error" role="alert">{startDateError}</div>
+                                </template>
                             </div>
 
                             <div class="form-field">
@@ -366,16 +370,19 @@
                                     value={formData.projectEndDate}
                                     data-field="projectEndDate"
                                     onchange={handleInputChange}
+                                    max={maxEndDate}
                                     required
                                     class="custom-input">
                                 </lightning-input>
+                                <template lwc:if={hasEndDateError}>
+                                    <div class="date-error" role="alert">{endDateError}</div>
+                                </template>
                             </div>
                         </div>
 
                         <div class="section-header">
                             <lightning-icon icon-name="standard:file" size="small"></lightning-icon>
-                            <h2>Supporting Documents</h2>
-                            <span class="optional-badge">Optional</span>
+                            <h2>Supporting Documents <abbr class="slds-required" title="required">*</abbr></h2>
                         </div>
                         
                         <div class="file-upload-area">

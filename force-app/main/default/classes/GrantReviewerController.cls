@@ -72,4 +72,40 @@ public with sharing class GrantReviewerController {
         
         return stats;
     }
+    
+    @AuraEnabled
+    public static List<Map<String, Object>> getApplicationDocuments(String applicationId) {
+        List<Map<String, Object>> documents = new List<Map<String, Object>>();
+        
+        try {
+            List<ContentDocumentLink> links = [
+                SELECT ContentDocumentId, ContentDocument.Title, ContentDocument.FileType,
+                       ContentDocument.ContentSize, ContentDocument.LatestPublishedVersionId
+                FROM ContentDocumentLink
+                WHERE LinkedEntityId = :applicationId
+                LIMIT 100
+            ];
+            
+            for (ContentDocumentLink link : links) {
+                Map<String, Object> doc = new Map<String, Object>();
+                doc.put('id', link.ContentDocumentId);
+                doc.put('title', link.ContentDocument.Title);
+                doc.put('fileType', link.ContentDocument.FileType);
+                doc.put('size', formatFileSize(link.ContentDocument.ContentSize));
+                doc.put('versionId', link.ContentDocument.LatestPublishedVersionId);
+                documents.add(doc);
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException('Unable to retrieve documents: ' + e.getMessage());
+        }
+        
+        return documents;
+    }
+    
+    private static String formatFileSize(Integer bytes) {
+        if (bytes == null) return '0 B';
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024) + ' KB';
+        return (bytes / (1024 * 1024)) + ' MB';
+    }
 }

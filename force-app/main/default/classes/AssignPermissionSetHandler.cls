@@ -1,6 +1,6 @@
 public without sharing class AssignPermissionSetHandler {
     
-    private static final String PERMISSION_SET_NAME = 'Grant_Application_Access';
+    private static final String PERMISSION_SET_NAME = 'Grant_Applicant';
     private static final String COMMUNITY_PROFILE_NAME = 'Customer Community User';
     
     @future

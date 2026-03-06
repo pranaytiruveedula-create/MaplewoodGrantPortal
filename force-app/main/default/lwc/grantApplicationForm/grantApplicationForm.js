@@ -38,6 +38,9 @@ export default class GrantApplicationForm extends LightningElement {
         numBeneficiaries: null
     };
 
+    @track startDateError = '';
+    @track endDateError = '';
+
     get organizationTypeOptions() {
         return [
             { label: '-- Select --', value: '' },
@@ -152,6 +155,27 @@ export default class GrantApplicationForm extends LightningElement {
         return ['.pdf', '.doc', '.docx', '.xls', '.xlsx'];
     }
 
+    get hasStartDateError() {
+        return this.startDateError !== '';
+    }
+
+    get hasEndDateError() {
+        return this.endDateError !== '';
+    }
+
+    get minStartDate() {
+        const today = new Date();
+        today.setDate(today.getDate() + 30);
+        return today.toISOString().split('T')[0];
+    }
+
+    get maxEndDate() {
+        if (!this.formData.projectStartDate) return null;
+        const startDate = new Date(this.formData.projectStartDate);
+        startDate.setMonth(startDate.getMonth() + 24);
+        return startDate.toISOString().split('T')[0];
+    }
+
     handleInputChange(event) {
         const field = event.target.dataset.field;
         let value = event.detail?.value ?? event.target.value;
@@ -162,12 +186,62 @@ export default class GrantApplicationForm extends LightningElement {
         
         this.formData = { ...this.formData, [field]: value };
         
+        if (field === 'projectStartDate' || field === 'projectEndDate') {
+            this.validateDates();
+        }
+        
         if (this.shouldRecalculateEligibility(field)) {
             clearTimeout(this._eligibilityDebounceTimer);
             this._eligibilityDebounceTimer = setTimeout(() => {
                 this.calculateEligibility();
             }, 400);
         }
+    }
+
+    validateDates() {
+        let startDateError = '';
+        let endDateError = '';
+        
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const todayParts = todayStr.split('-');
+        const todayDate = new Date(parseInt(todayParts[0]), parseInt(todayParts[1]) - 1, parseInt(todayParts[2]));
+        
+        const minStartDate = new Date(todayDate);
+        minStartDate.setDate(minStartDate.getDate() + 30);
+
+        if (this.formData.projectStartDate) {
+            const startParts = this.formData.projectStartDate.split('-');
+            const startDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
+            
+            if (startDate < minStartDate) {
+                startDateError = 'Project Start Date must be at least 30 days in the future.';
+            }
+        }
+
+        if (this.formData.projectEndDate) {
+            const endParts = this.formData.projectEndDate.split('-');
+            const endDate = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]));
+            
+            if (this.formData.projectStartDate) {
+                const startParts = this.formData.projectStartDate.split('-');
+                const startDate = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]));
+                
+                if (endDate <= startDate) {
+                    endDateError = 'Project End Date must be after the Start Date.';
+                } else {
+                    const maxEndDate = new Date(startDate);
+                    maxEndDate.setMonth(maxEndDate.getMonth() + 24);
+                    if (endDate > maxEndDate) {
+                        endDateError = 'Project End Date must be within 24 months of the Start Date.';
+                    }
+                }
+            }
+        }
+
+        this.startDateError = startDateError;
+        this.endDateError = endDateError;
+        return startDateError === '' && endDateError === '';
     }
 
     handlePhoneChange(event) {
@@ -317,6 +391,15 @@ export default class GrantApplicationForm extends LightningElement {
             }
         }
 
+        if (!this.validateDates()) {
+            isValid = false;
+            if (this.startDateError) {
+                this.showToast('Error', this.startDateError, 'error');
+            } else if (this.endDateError) {
+                this.showToast('Error', this.endDateError, 'error');
+            }
+        }
+
         return isValid;
     }
 
@@ -377,6 +460,11 @@ export default class GrantApplicationForm extends LightningElement {
                 this.showToast('Error', 'Please fill in the required field: ' + field, 'error');
                 return;
             }
+        }
+
+        if (!this.uploadedFiles || this.uploadedFiles.length === 0) {
+            this.showToast('Error', 'Please upload at least one supporting document (PDF, JPG, or PNG).', 'error');
+            return;
         }
 
         this.isLoading = true;

@@ -196,6 +196,11 @@
         <field>Status_History__c.Changed_At__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Status_History__c.Application__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <classAccesses>
         <apexClass>GrantAwardService</apexClass>
         <enabled>true</enabled>

@@ -12,6 +12,7 @@ public with sharing class GrantApplicationTriggerHandler {
                 history.Old_Status__c = oldApp.Status__c;
                 history.New_Status__c = app.Status__c;
                 history.Changed_At__c = DateTime.now();
+                history.Changed_By__c = UserInfo.getUserId();
                 history.Comments__c = 'Status changed from ' + oldApp.Status__c + ' to ' + app.Status__c;
                 historyRecords.add(history);
             }

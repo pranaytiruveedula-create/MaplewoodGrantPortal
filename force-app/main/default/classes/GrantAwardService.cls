@@ -101,8 +101,6 @@ public with sharing class GrantAwardService {
             
             update app;
             
-            createStatusHistory(applicationId, 'Under Review', 'Approved', 'Application approved with award: $' + result.finalAwardAmount);
-            
         } catch (Exception e) {
             result.success = false;
             result.errorMessage = e.getMessage();
@@ -127,8 +125,6 @@ public with sharing class GrantAwardService {
             
             update app;
             
-            createStatusHistory(applicationId, 'Under Review', 'Rejected', reviewerComments);
-            
             return true;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -145,10 +141,8 @@ public with sharing class GrantAwardService {
             ];
             
             if (app.Status__c == 'Submitted') {
-                String oldStatus = app.Status__c;
                 app.Status__c = 'Under Review';
                 update app;
-                createStatusHistory(applicationId, oldStatus, 'Under Review', 'Review started');
             }
             
             return true;
@@ -283,13 +277,4 @@ public with sharing class GrantAwardService {
         return Math.round(amount / 100) * 100;
     }
     
-    private static void createStatusHistory(Id applicationId, String oldStatus, String newStatus, String comments) {
-        Status_History__c history = new Status_History__c();
-        history.Application__c = applicationId;
-        history.Old_Status__c = oldStatus;
-        history.New_Status__c = newStatus;
-        history.Changed_At__c = DateTime.now();
-        history.Comments__c = comments;
-        insert history;
-    }
 }

@@ -236,7 +236,7 @@ force-app/main/default/
 
 | Metric | Result |
 |:-------|:-------|
-| Total Tests | 64 |
+| Total Tests | 89 |
 | Pass Rate | 100% |
 | Org\-Wide Coverage | 86% |
 | GrantEligibilityService | 100% |
